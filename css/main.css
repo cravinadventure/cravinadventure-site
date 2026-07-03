@@ -144,6 +144,12 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
   .stat{text-align:left}
 }
 
+@media(max-width:480px){
+  .ig-corner{display:none}
+  .navlinks{gap:12px}
+  #nav a{font-size:10.5px;letter-spacing:1px}
+}
+
 /* ---------- reduced motion ---------- */
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
