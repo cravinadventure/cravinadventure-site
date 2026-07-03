@@ -68,6 +68,17 @@
     });
   });
 
+  /* ---------- services rows: if a row holds a link, the whole row is clickable ---------- */
+  document.querySelectorAll('.svc').forEach(function (row) {
+    var a = row.querySelector('a[href]');
+    if (!a) return;
+    row.classList.add('has-link');
+    row.addEventListener('click', function (ev) {
+      if (ev.target.closest('a')) return; /* clicks on the link itself behave natively */
+      a.click(); /* rides the same exit-veil transition */
+    });
+  });
+
   /* ---------- video playback: only while in view ---------- */
   var vids = document.querySelectorAll('video');
   if ('IntersectionObserver' in window) {
