@@ -249,7 +249,11 @@
     var ORANGE = [255, 122, 26], PURPLE = [108, 92, 231];
     function drawTrail() {
       if (pts.length < 2) { allowed = 0; return; }
-      allowed -= RETRACT * (docEl.classList.contains('adhd') ? 20 : 1); /* self-erase, scaled so hard mode clears in the same time */
+      if (docEl.classList.contains('adhd')) {
+        allowed = allowed * 0.985 - 2; /* proportional decay: drawing always outpaces the erase */
+      } else {
+        allowed -= RETRACT;
+      }
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       var run = 0;
