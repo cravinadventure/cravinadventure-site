@@ -213,3 +213,8 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .svc.has-link{cursor:pointer}
 .adhd{overflow:auto}
 .adhd body{overflow:clip}
+.svc-hidden{display:none}
+.svc-open .svc-hidden{display:flex;animation:svcin .35s ease both}
+@keyframes svcin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.svc-toggle{margin-top:14px;background:none;border:none;border-bottom:1px solid transparent;color:var(--accent);font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;cursor:pointer;padding:8px 0;transition:border-color .2s}
+.svc-toggle:hover{border-bottom-color:var(--accent)}

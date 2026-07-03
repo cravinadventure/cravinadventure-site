@@ -93,6 +93,23 @@
     });
   });
 
+  /* ---------- services groups: top 5 visible, the rest behind a View-all toggle ---------- */
+  document.querySelectorAll('.svc-group').forEach(function (group) {
+    var rows = group.querySelectorAll('.svc');
+    if (rows.length <= 6) return; /* no point hiding a single row */
+    for (var i = 5; i < rows.length; i++) rows[i].classList.add('svc-hidden');
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'svc-toggle';
+    btn.textContent = 'View all ' + rows.length + ' ↓';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function () {
+      var open = group.classList.toggle('svc-open');
+      btn.textContent = open ? 'Show less ↑' : 'View all ' + rows.length + ' ↓';
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    group.appendChild(btn);
+  });
+
   /* ---------- services rows: if a row holds a link, the whole row is clickable ---------- */
   document.querySelectorAll('.svc').forEach(function (row) {
     var a = row.querySelector('a[href]');
