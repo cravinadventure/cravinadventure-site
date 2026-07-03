@@ -346,7 +346,7 @@
       obsAt = Date.now();
     }
     function spawnBall() {
-      if (balls.length >= 20) return;
+      if (balls.length >= 60) return;
       balls.push({ x: 30 + Math.random() * (window.innerWidth - 60), y: -12,
         vx: (Math.random() - 0.5) * 4, vy: 0, r: 4 + Math.random() * 5, born: Date.now() });
     }
@@ -354,7 +354,7 @@
       spawnTimer = setTimeout(function () {
         if (!adhdOn()) return;
         spawnBall(); scheduleBall();
-      }, 2000 + Math.random() * 8000);
+      }, 250 + Math.random() * 650);
     }
     var BALL_LIFE = 25000;
     function drawBalls() {
@@ -385,7 +385,7 @@
     if (adhdBtn) adhdBtn.addEventListener('click', function () {
       var on = docEl.classList.toggle('adhd');
       adhdBtn.setAttribute('aria-pressed', String(on));
-      if (on) { refreshObstacles(); spawnBall(); scheduleBall(); }
+      if (on) { refreshObstacles(); for (var i = 0; i < 6; i++) spawnBall(); scheduleBall(); }
       else { clearTimeout(spawnTimer); balls = []; }
     });
     function trailTick() {
