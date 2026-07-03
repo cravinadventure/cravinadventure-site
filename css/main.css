@@ -80,6 +80,8 @@ main section, footer{padding:110px 34px}
 /* ---------- work grid ---------- */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:1240px;margin:0 auto}
 .card{display:block;background:var(--panel2);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:opacity .3s ease,border-color .3s ease}
+.card.wide{grid-column:1/-1}
+.card.wide .media{height:420px}
 .card .ctag{padding:16px 24px 12px;font-size:11.5px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:var(--accent)}
 .card .ctag::before{content:">> "}
 .card .media{height:300px;overflow:hidden;background:var(--panel)}
