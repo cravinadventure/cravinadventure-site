@@ -523,28 +523,35 @@
       var H = window.innerHeight;
       var sel = 'h1,h2,h3,p,li,button,.svc b,.svc span,.ctag,.stat,.card h3,.meta,#nav a,.ig-corner,.alllink a,footer a,.pfoot a,.pcopy,.mq-track,.pmq';
       document.querySelectorAll(sel).forEach(function (el) {
-        if (el.__inkUnder === undefined) el.__inkUnder = Math.random() < 0.5; /* each text block picks a side once */
-        if (!el.__inkUnder) return; /* this one lets the line ride OVER it */
         var er = el.getBoundingClientRect();
         if (er.top > H || er.bottom < 0 || er.width === 0) return;
         var rng = document.createRange(); rng.selectNodeContents(el);
         var rs = rng.getClientRects();
         for (var i = 0; i < rs.length; i++) {
           var r = rs[i];
-          if (r.width > 4 && r.height > 4 && r.top < H && r.bottom > 0) inkRects.push(r);
+          if (r.width > 4 && r.height > 4 && r.top < H && r.bottom > 0) inkRects.push({ r: r, el: el });
         }
       });
       inkAt = Date.now();
     }
-    var inkScrollBound = false;
+    var inkScrollBound = false, lastTextEl = null;
     function maskTrailUnderText() {
       if (Date.now() - inkAt > 250) refreshInk();
       if (!inkScrollBound) { inkScrollBound = true; window.addEventListener('scroll', function () { inkAt = 0; }, { passive: true }); }
+      /* each time the cursor enters a text block, that block flips: under, over, under... */
+      var over = null;
+      for (var i = 0; i < inkRects.length; i++) {
+        var e = inkRects[i];
+        if (mouseX >= e.r.left && mouseX <= e.r.right && mouseY >= e.r.top && mouseY <= e.r.bottom) { over = e.el; break; }
+      }
+      if (over && over !== lastTextEl) over.__inkUnder = !over.__inkUnder; /* first pass: under */
+      lastTextEl = over;
       tctx.globalCompositeOperation = 'destination-out';
       tctx.fillStyle = '#000';
-      for (var i = 0; i < inkRects.length; i++) {
-        var r = inkRects[i];
-        tctx.fillRect(r.left, r.top, r.width, r.height);
+      for (var i2 = 0; i2 < inkRects.length; i2++) {
+        var e2 = inkRects[i2];
+        if (!e2.el.__inkUnder) continue;
+        tctx.fillRect(e2.r.left, e2.r.top, e2.r.width, e2.r.height);
       }
       tctx.globalCompositeOperation = 'source-over';
     }
