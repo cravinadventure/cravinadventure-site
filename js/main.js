@@ -178,6 +178,7 @@
       var m = pa.map(function (x, i) { return Math.round(x + (pb[i] - x) * t); });
       return 'rgb(' + m[0] + ',' + m[1] + ',' + m[2] + ')';
     }
+    var rainbowHue = 0;
     var lastFrameAt = 0;
     function frame() {
       lastFrameAt = Date.now();
@@ -201,6 +202,13 @@
       }
       heat *= 0.965;
       if (heat < 0.006) { heat = 0; wasCold = true; }
+      if (docEl.classList.contains('adhd')) { /* hard mode: fast rainbow loop overrides heat */
+        rainbowHue = (rainbowHue + 9) % 360;
+        docEl.style.setProperty('--accent', 'hsl(' + rainbowHue + ',95%,62%)');
+        docEl.style.setProperty('--accent-deep', 'hsl(' + rainbowHue + ',80%,36%)');
+        docEl.style.setProperty('--heat', '0');
+        return;
+      }
       docEl.style.setProperty('--accent', mixHex('#6C5CE7', '#ff7a1a', heat));
       docEl.style.setProperty('--accent-deep', mixHex('#41348f', '#b35110', heat));
       docEl.style.setProperty('--heat', String(heat.toFixed(3)));
@@ -230,9 +238,9 @@
     window.addEventListener('mousemove', function (e) {
       var h = pts[0];
       if (h && Math.abs(h.x - e.clientX) < 1 && Math.abs(h.y - e.clientY) < 1) return;
-      if (h) allowed = Math.min(TRAIL_MAX, allowed + Math.hypot(e.clientX - h.x, e.clientY - h.y));
+      if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(e.clientX - h.x, e.clientY - h.y));
       pts.unshift({ x: e.clientX, y: e.clientY });
-      if (pts.length > 1600) pts.length = 1600;
+      if (pts.length > 4000) pts.length = 4000;
     }, { passive: true });
 
     function mixT(a, b, t) {
@@ -241,7 +249,7 @@
     var ORANGE = [255, 122, 26], PURPLE = [108, 92, 231];
     function drawTrail() {
       if (pts.length < 2) { allowed = 0; return; }
-      allowed -= RETRACT; /* the self-erase: idle trail retracts into the cursor */
+      allowed -= RETRACT * (docEl.classList.contains('adhd') ? 20 : 1); /* self-erase, scaled so hard mode clears in the same time */
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       var run = 0;
@@ -327,12 +335,67 @@
         });
       });
     }
+    /* ---- hard mode: white balls with gravity, bouncing off words and boxes ---- */
+    var balls = [], spawnTimer = null, obstacles = [], obsAt = 0;
+    function adhdOn() { return docEl.classList.contains('adhd'); }
+    function refreshObstacles() {
+      obstacles = [];
+      document.querySelectorAll('h2,h3,.svc b,.ctag,.card,.pfoot,.cred p').forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.width > 8 && r.top < window.innerHeight && r.bottom > 0) obstacles.push(r);
+      });
+      obsAt = Date.now();
+    }
+    function spawnBall() {
+      if (balls.length >= 20) return;
+      balls.push({ x: 30 + Math.random() * (window.innerWidth - 60), y: -12,
+        vx: (Math.random() - 0.5) * 4, vy: 0, r: 4 + Math.random() * 5, born: Date.now() });
+    }
+    function scheduleBall() {
+      spawnTimer = setTimeout(function () {
+        if (!adhdOn()) return;
+        spawnBall(); scheduleBall();
+      }, 2000 + Math.random() * 8000);
+    }
+    var BALL_LIFE = 25000;
+    function drawBalls() {
+      if (!balls.length) return;
+      var now = Date.now(), W = window.innerWidth, H = window.innerHeight;
+      if (now - obsAt > 600) refreshObstacles();
+      balls = balls.filter(function (b) { return now - b.born < BALL_LIFE; });
+      balls.forEach(function (b) {
+        b.vy += 0.45; b.x += b.vx; b.y += b.vy; /* gravity */
+        if (b.x < b.r) { b.x = b.r; b.vx = -b.vx * 0.8; }
+        if (b.x > W - b.r) { b.x = W - b.r; b.vx = -b.vx * 0.8; }
+        if (b.y > H - b.r) { b.y = H - b.r; b.vy = -b.vy * 0.62; b.vx *= 0.985; }
+        if (b.vy > 0) { /* land on words and boxes */
+          for (var i = 0; i < obstacles.length; i++) {
+            var o = obstacles[i];
+            if (b.x > o.left && b.x < o.right && b.y + b.r > o.top && b.y + b.r < o.top + Math.max(14, b.vy + 2)) {
+              b.y = o.top - b.r; b.vy = -b.vy * 0.62; b.vx *= 0.985; break;
+            }
+          }
+        }
+        var age = now - b.born;
+        var alpha = age > BALL_LIFE - 3000 ? Math.max(0, (BALL_LIFE - age) / 3000) : 1;
+        tctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
+        tctx.beginPath(); tctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); tctx.fill();
+      });
+    }
+    var adhdBtn = document.getElementById('adhdbtn');
+    if (adhdBtn) adhdBtn.addEventListener('click', function () {
+      var on = docEl.classList.toggle('adhd');
+      adhdBtn.setAttribute('aria-pressed', String(on));
+      if (on) { refreshObstacles(); spawnBall(); scheduleBall(); }
+      else { clearTimeout(spawnTimer); balls = []; }
+    });
     function trailTick() {
       tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
       tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       drawTrail();
       drawCracks();
+      drawBalls();
     }
     var lastTrailAt = 0;
     function trailFrame() { lastTrailAt = Date.now(); trailTick(); requestAnimationFrame(trailFrame); }
