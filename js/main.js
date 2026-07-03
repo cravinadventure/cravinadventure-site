@@ -239,9 +239,7 @@
       return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
     }
     var ORANGE = [255, 122, 26], PURPLE = [108, 92, 231];
-    function trailTick() {
-      tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
-      tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    function drawTrail() {
       if (pts.length < 2) { allowed = 0; return; }
       allowed -= RETRACT; /* the self-erase: idle trail retracts into the cursor */
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
@@ -267,6 +265,74 @@
         run += seg;
         if (cut) { pts.length = i + 2; pts[i + 1] = end; break; }
       }
+    }
+    /* ---- click fracture: spider-web crack from the click point, 5s fade ---- */
+    var cracks = [], CRACK_MS = 5000;
+    function makeCrack(cx, cy) {
+      var segs = [], spokePts = [], maxR = 0;
+      var spokes = 7 + Math.floor(Math.random() * 4);
+      for (var s = 0; s < spokes; s++) {
+        var ang = (s / spokes) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+        var len = 60 + Math.random() * 90;
+        if (len > maxR) maxR = len;
+        var x = cx, y = cy, r = 0, n = 4 + Math.floor(Math.random() * 3);
+        var along = [{ x: cx, y: cy, r: 0 }];
+        for (var i = 1; i <= n; i++) {
+          var a2 = ang + (Math.random() - 0.5) * 0.55;
+          var step = (len / n) * (0.7 + Math.random() * 0.6);
+          var nx = x + Math.cos(a2) * step, ny = y + Math.sin(a2) * step;
+          r += step;
+          segs.push({ x1: x, y1: y, x2: nx, y2: ny, d: r });
+          along.push({ x: nx, y: ny, r: r });
+          x = nx; y = ny;
+          if (i === 2 && Math.random() < 0.5) { /* occasional side branch */
+            var ba = a2 + (Math.random() < 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.4);
+            var bl = step * (0.8 + Math.random() * 0.8);
+            segs.push({ x1: x, y1: y, x2: x + Math.cos(ba) * bl, y2: y + Math.sin(ba) * bl, d: r + bl });
+          }
+        }
+        spokePts.push(along);
+      }
+      /* web rings tying neighbouring spokes together */
+      [0.35, 0.68].forEach(function (f) {
+        for (var s2 = 0; s2 < spokes; s2++) {
+          var A = spokePts[s2], B = spokePts[(s2 + 1) % spokes];
+          var pa = A[Math.max(1, Math.round(f * (A.length - 1)))];
+          var pb = B[Math.max(1, Math.round(f * (B.length - 1)))];
+          if (Math.random() < 0.75) segs.push({ x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, d: (pa.r + pb.r) / 2 });
+        }
+      });
+      segs.forEach(function (g) { g.t = Math.min(1, g.d / maxR); });
+      return { segs: segs, born: Date.now() };
+    }
+    window.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      cracks.push(makeCrack(e.clientX, e.clientY));
+      if (cracks.length > 12) cracks.shift();
+    });
+    function drawCracks() {
+      if (!cracks.length) return;
+      var now = Date.now();
+      cracks = cracks.filter(function (c) { return now - c.born < CRACK_MS; });
+      cracks.forEach(function (c) {
+        var k = (now - c.born) / CRACK_MS;
+        var fade = 1 - k * k; /* holds bright, then lets go */
+        c.segs.forEach(function (g) {
+          var col = mixT(ORANGE, PURPLE, Math.min(1, g.t / 0.55));
+          var alpha = (g.t < 0.65 ? 1 : Math.max(0, (1 - g.t) / 0.35)) * fade;
+          if (alpha <= 0.01) return;
+          tctx.strokeStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha.toFixed(3) + ')';
+          tctx.lineWidth = Math.max(0.5, 2.6 - 2 * g.t);
+          tctx.beginPath(); tctx.moveTo(g.x1, g.y1); tctx.lineTo(g.x2, g.y2); tctx.stroke();
+        });
+      });
+    }
+    function trailTick() {
+      tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
+      tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      tctx.lineCap = 'round'; tctx.lineJoin = 'round';
+      drawTrail();
+      drawCracks();
     }
     var lastTrailAt = 0;
     function trailFrame() { lastTrailAt = Date.now(); trailTick(); requestAnimationFrame(trailFrame); }
