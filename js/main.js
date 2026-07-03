@@ -145,12 +145,31 @@
         heat = target;
       }
     }, { passive: true });
+    /* page-wide heat: the accent variable itself glides purple -> orange */
+    function mixHex(a, b, t) {
+      var pa = [parseInt(a.slice(1,3),16), parseInt(a.slice(3,5),16), parseInt(a.slice(5,7),16)];
+      var pb = [parseInt(b.slice(1,3),16), parseInt(b.slice(3,5),16), parseInt(b.slice(5,7),16)];
+      var m = pa.map(function (x, i) { return Math.round(x + (pb[i] - x) * t); });
+      return 'rgb(' + m[0] + ',' + m[1] + ',' + m[2] + ')';
+    }
     setInterval(function () {
-      if (!grainA) return;
+      /* velocity by position polling (no reliance on scroll events) */
+      var now = Date.now(), y = window.scrollY;
+      var dt = Math.max(now - lastT, 1);
+      var v = Math.abs(y - lastY) / dt * 1000;
+      lastY = y; lastT = now;
+      var target = Math.min(1, v / 1300);
+      if (target > heat) {
+        if (wasCold && grainT) { grainT.setAttribute('seed', String(Math.floor(Math.random() * 1000))); }
+        wasCold = false;
+        heat = target;
+      }
       heat *= 0.94; /* decay back to purple */
       if (heat < 0.05) { heat = 0; wasCold = true; }
-      /* alpha = noise*slope + intercept: heat 1 = solid orange, low heat = only noise peaks stay orange */
-      grainA.setAttribute('intercept', String((heat * 3.4 - 2.6).toFixed(3)));
+      docEl.style.setProperty('--accent', mixHex('#6C5CE7', '#ff7a1a', heat));
+      docEl.style.setProperty('--accent-deep', mixHex('#41348f', '#b35110', heat));
+      docEl.style.setProperty('--heat', String(heat.toFixed(3)));
+      if (grainA) grainA.setAttribute('intercept', String((heat * 3.4 - 2.6).toFixed(3)));
     }, 33);
   }
 
