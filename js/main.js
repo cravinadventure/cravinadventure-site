@@ -151,7 +151,9 @@
       return 'rgb(' + m[0] + ',' + m[1] + ',' + m[2] + ')';
     }
     var lastApplied = -1;
+    var lastFrameAt = 0;
     function frame() {
+      lastFrameAt = Date.now();
       /* ribbon text: frame-synced, time-based (no interval jitter) */
       ribbonTick();
       /* velocity by position polling */
@@ -179,6 +181,8 @@
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
+    /* fallback: if rAF is throttled/suspended, keep coarse motion alive */
+    setInterval(function () { if (Date.now() - lastFrameAt > 500) frame(); }, 400);
   }
 
   /* ---------- boot ---------- */
