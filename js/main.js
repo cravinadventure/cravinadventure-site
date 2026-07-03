@@ -109,6 +109,25 @@
 
   /* hero reel: 2s cuts from every animation in the library, back to back */
 
+  /* ---------- curved ribbon marquee: text rides the path ---------- */
+  var tp = document.getElementById('ribbonTP');
+  if (tp && !reduceMotion) {
+    var third = null;
+    function ribbonTick() {
+      try {
+        if (third === null) {
+          var total = tp.getComputedTextLength();
+          if (!total) return;
+          third = total / 3; /* content repeats 3x */
+        }
+        var speed = 90; /* px per second along the path */
+        var off = -((Date.now() / 1000 * speed) % third);
+        tp.setAttribute('startOffset', String(off));
+      } catch (e) {}
+    }
+    setInterval(ribbonTick, 33);
+  }
+
   /* ---------- boot ---------- */
   function boot() {
     fitKnockout();

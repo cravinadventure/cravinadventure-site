@@ -54,10 +54,17 @@
   <div class="cue" data-load aria-hidden="true">SCROLL</div>
 </header>
 
-<div class="marquee" aria-hidden="true">
-  <div class="mq-track">
-    <span>LIVE VISUALS &nbsp;•&nbsp; IMMERSIVE EVENTS &nbsp;•&nbsp; PROJECTION &nbsp;•&nbsp; AR &nbsp;•&nbsp; CONTENT ENGINES &nbsp;•&nbsp; STAGE DESIGN &nbsp;•&nbsp; </span><span>LIVE VISUALS &nbsp;•&nbsp; IMMERSIVE EVENTS &nbsp;•&nbsp; PROJECTION &nbsp;•&nbsp; AR &nbsp;•&nbsp; CONTENT ENGINES &nbsp;•&nbsp; STAGE DESIGN &nbsp;•&nbsp; </span>
-  </div>
+<div class="ribbon-wrap" aria-hidden="true">
+  <svg class="ribbon" viewBox="0 0 1600 260" preserveAspectRatio="none">
+    <defs>
+      <path id="ribbonPath" d="M -40 70 Q 800 215 1640 120" fill="none"/>
+    </defs>
+    <path d="M -40 84 Q 800 229 1640 134" fill="none" stroke="#41348f" stroke-width="112"/>
+    <path d="M -40 70 Q 800 215 1640 120" fill="none" stroke="var(--accent)" stroke-width="112"/>
+    <text class="ribbon-text" dominant-baseline="central">
+      <textPath id="ribbonTP" href="#ribbonPath" startOffset="0">LIVE VISUALS &#8226; IMMERSIVE EVENTS &#8226; PROJECTION &#8226; AR &#8226; CONTENT ENGINES &#8226; STAGE DESIGN &#8226; LIVE VISUALS &#8226; IMMERSIVE EVENTS &#8226; PROJECTION &#8226; AR &#8226; CONTENT ENGINES &#8226; STAGE DESIGN &#8226; LIVE VISUALS &#8226; IMMERSIVE EVENTS &#8226; PROJECTION &#8226; AR &#8226; CONTENT ENGINES &#8226; STAGE DESIGN &#8226; </textPath>
+    </text>
+  </svg>
 </div>
 
 <main>
