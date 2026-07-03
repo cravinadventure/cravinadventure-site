@@ -339,9 +339,22 @@
     function adhdOn() { return docEl.classList.contains('adhd'); }
     function refreshObstacles() {
       obstacles = [];
-      document.querySelectorAll('h2,h3,.svc b,.ctag,.card,.pfoot,.cred p').forEach(function (el) {
+      var H = window.innerHeight;
+      /* visible boxes: bounce on the element rect */
+      document.querySelectorAll('.card,.pfoot').forEach(function (el) {
         var r = el.getBoundingClientRect();
-        if (r.width > 8 && r.top < window.innerHeight && r.bottom > 0) obstacles.push(r);
+        if (r.width > 8 && r.top < H && r.bottom > 0) obstacles.push(r);
+      });
+      /* text: bounce only on the ink itself; block boxes stretch wider than the words */
+      document.querySelectorAll('h2,h3,.svc b,.ctag,.cred p').forEach(function (el) {
+        var er = el.getBoundingClientRect();
+        if (er.top > H || er.bottom < 0) return;
+        var rng = document.createRange(); rng.selectNodeContents(el);
+        var rects = rng.getClientRects();
+        for (var i = 0; i < rects.length; i++) {
+          var r = rects[i];
+          if (r.width > 8 && r.height > 4 && r.top < H && r.bottom > 0) obstacles.push(r);
+        }
       });
       obsAt = Date.now();
     }
@@ -363,7 +376,7 @@
       if (now - obsAt > 600) refreshObstacles();
       balls = balls.filter(function (b) { return now - b.born < BALL_LIFE && b.x < W + 60; });
       balls.forEach(function (b) {
-        b.vy += 0.45; b.vx += 0.045; /* gravity tips down-and-right: nothing ever sits still */
+        b.vy += 0.45; b.vx += 0.018; /* gravity tips down and a touch right: nothing ever sits still */
         b.x += b.vx; b.y += b.vy;
         if (b.x < b.r) { b.x = b.r; b.vx = -b.vx * 0.8; }
         if (b.y > H - b.r) { b.y = H - b.r; b.vy = -b.vy * 0.62; b.vx *= 0.985; }
