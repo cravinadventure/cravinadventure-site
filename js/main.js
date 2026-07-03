@@ -401,11 +401,42 @@
       if (on) { refreshObstacles(); for (var i = 0; i < 6; i++) spawnBall(); scheduleBall(); }
       else { clearTimeout(spawnTimer); balls = []; }
     });
+    /* ---- text ink map: the trail passes UNDER words (normal mode) ---- */
+    var inkRects = [], inkAt = 0;
+    function refreshInk() {
+      inkRects = [];
+      var H = window.innerHeight;
+      var sel = 'h1,h2,h3,p,li,button,.svc b,.svc span,.ctag,.stat,.card h3,.meta,#nav a,.ig-corner,.alllink a,footer a,.pfoot a,.pcopy,.mq-track,.pmq';
+      document.querySelectorAll(sel).forEach(function (el) {
+        var er = el.getBoundingClientRect();
+        if (er.top > H || er.bottom < 0 || er.width === 0) return;
+        var rng = document.createRange(); rng.selectNodeContents(el);
+        var rs = rng.getClientRects();
+        for (var i = 0; i < rs.length; i++) {
+          var r = rs[i];
+          if (r.width > 4 && r.height > 4 && r.top < H && r.bottom > 0) inkRects.push(r);
+        }
+      });
+      inkAt = Date.now();
+    }
+    var inkScrollBound = false;
+    function maskTrailUnderText() {
+      if (Date.now() - inkAt > 250) refreshInk();
+      if (!inkScrollBound) { inkScrollBound = true; window.addEventListener('scroll', function () { inkAt = 0; }, { passive: true }); }
+      tctx.globalCompositeOperation = 'destination-out';
+      tctx.fillStyle = '#000';
+      for (var i = 0; i < inkRects.length; i++) {
+        var r = inkRects[i];
+        tctx.fillRect(r.left, r.top, r.width, r.height);
+      }
+      tctx.globalCompositeOperation = 'source-over';
+    }
     function trailTick() {
       tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
       tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       drawTrail();
+      if (!adhdOn()) maskTrailUnderText(); /* words stay on top of the line */
       drawCracks();
       drawBalls();
     }
