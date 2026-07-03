@@ -229,7 +229,7 @@
   }
 
   /* ---------- cursor trail: orange head, purple fade, erases itself ---------- */
-  if (!reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+  if (!reduceMotion) {
     var tc = document.createElement('canvas');
     tc.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:300;pointer-events:none';
     tc.setAttribute('aria-hidden', 'true');
@@ -247,26 +247,28 @@
     var pts = [];          /* head first */
     var allowed = 0; /* current permitted trail length: earned by movement, spent by retraction */
     var mouseX = -9999, mouseY = -9999, mvx = 0, mvy = 0;
-    window.addEventListener('mousemove', function (e) {
-      if (mouseX > -9999) { mvx = e.clientX - mouseX; mvy = e.clientY - mouseY; }
-      mouseX = e.clientX; mouseY = e.clientY;
+    function onMove(px, py) {
+      if (mouseX > -9999) { mvx = px - mouseX; mvy = py - mouseY; }
+      mouseX = px; mouseY = py;
       var h = pts[0];
-      if (h && Math.abs(h.x - e.clientX) < 1 && Math.abs(h.y - e.clientY) < 1) return;
-      if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(e.clientX - h.x, e.clientY - h.y));
+      if (h && Math.abs(h.x - px) < 1 && Math.abs(h.y - py) < 1) return;
+      if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(px - h.x, py - h.y));
       /* which text block is the cursor inside? entering one flips its layer: under, over, under... */
       var blk = null;
       if (!docEl.classList.contains('adhd')) {
         if (Date.now() - inkAt > 250) refreshInk();
         for (var q = 0; q < inkRects.length; q++) {
           var eq = inkRects[q];
-          if (e.clientX >= eq.r.left && e.clientX <= eq.r.right && e.clientY >= eq.r.top && e.clientY <= eq.r.bottom) { blk = eq.el; break; }
+          if (px >= eq.r.left && px <= eq.r.right && py >= eq.r.top && py <= eq.r.bottom) { blk = eq.el; break; }
         }
         if (blk && blk !== lastTextEl) blk.__inkUnder = !blk.__inkUnder; /* first pass goes under */
         lastTextEl = blk;
       }
-      pts.unshift({ x: e.clientX, y: e.clientY, u: blk ? !!blk.__inkUnder : false });
+      pts.unshift({ x: px, y: py, u: blk ? !!blk.__inkUnder : false });
       if (pts.length > 12000) pts.length = 12000;
-    }, { passive: true });
+    }
+    window.addEventListener('mousemove', function (e) { onMove(e.clientX, e.clientY); }, { passive: true });
+    window.addEventListener('touchmove', function (e) { var t = e.touches[0]; if (t) onMove(t.clientX, t.clientY); }, { passive: true });
 
     function mixT(a, b, t) {
       return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
@@ -349,13 +351,21 @@
       segs.forEach(function (g) { g.t = Math.min(1, g.d / maxR); });
       return { segs: segs, born: Date.now() };
     }
-    window.addEventListener('mousedown', function (e) {
-      if (e.button !== 0) return;
-      var onButton = adhdBtn && adhdBtn.contains(e.target);
+    function crackAt(px, py, target) {
+      var onButton = adhdBtn && adhdBtn.contains(target);
       if (!adhdOn() && !onButton) return; /* normal mode: only the ADHD button itself shatters */
-      cracks.push(makeCrack(e.clientX, e.clientY));
+      cracks.push(makeCrack(px, py));
       if (cracks.length > 12) cracks.shift();
+    }
+    var lastTouchAt = 0;
+    window.addEventListener('mousedown', function (e) {
+      if (e.button !== 0 || Date.now() - lastTouchAt < 800) return; /* skip the synthesized mousedown after a tap */
+      crackAt(e.clientX, e.clientY, e.target);
     });
+    window.addEventListener('touchstart', function (e) {
+      lastTouchAt = Date.now();
+      var t = e.touches[0]; if (t) crackAt(t.clientX, t.clientY, e.target);
+    }, { passive: true });
     function drawCracks() {
       if (!cracks.length) return;
       var now = Date.now();

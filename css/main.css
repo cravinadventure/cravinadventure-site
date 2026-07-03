@@ -205,7 +205,6 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .adhd-btn:hover{color:var(--paper);border-color:var(--accent)}
 .adhd .adhd-btn{background:var(--accent);border-color:var(--accent);color:#0a0a0a;animation:adhdpulse .6s ease-in-out infinite alternate}
 @keyframes adhdpulse{from{transform:scale(1)}to{transform:scale(1.07)}}
-@media(hover:none){.adhd-btn{display:none}}
 @media(max-width:820px){.adhd-btn{top:12px;left:12px;padding:7px 10px}}
 .phys{display:inline-block}
 .svc.has-link{cursor:pointer}
