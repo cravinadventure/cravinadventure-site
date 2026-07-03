@@ -239,7 +239,7 @@
       if (h && Math.abs(h.x - e.clientX) < 1 && Math.abs(h.y - e.clientY) < 1) return;
       if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(e.clientX - h.x, e.clientY - h.y));
       pts.unshift({ x: e.clientX, y: e.clientY });
-      if (pts.length > 4000) pts.length = 4000;
+      if (pts.length > 12000) pts.length = 12000;
     }, { passive: true });
 
     function mixT(a, b, t) {
@@ -248,10 +248,7 @@
     var ORANGE = [255, 122, 26], PURPLE = [108, 92, 231];
     function drawTrail() {
       if (pts.length < 2) { allowed = 0; return; }
-      if (docEl.classList.contains('adhd')) {
-        allowed = allowed * 0.985 - 2; /* hard mode still burns off when idle */
-      }
-      /* normal mode: no idle decay; the 800px trail stays put until the mouse moves again */
+      /* no idle decay in either mode: the trail window (800px / 16000px) holds until the mouse moves again */
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       var run = 0;
