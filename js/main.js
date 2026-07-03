@@ -277,7 +277,7 @@
     var cracks = [], CRACK_MS = 5000;
     function makeCrack(cx, cy) {
       var segs = [], spokePts = [], maxR = 0;
-      var size = 1 + Math.random(); /* each crack lands between 1x and 2x */
+      var size = 0.35 + Math.random() * 2.15; /* wider spread: tiny chips to huge shatters */
       var spokes = 7 + Math.floor(Math.random() * 4);
       for (var s = 0; s < spokes; s++) {
         var ang = (s / spokes) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
@@ -329,7 +329,7 @@
           var alpha = (g.t < 0.65 ? 1 : Math.max(0, (1 - g.t) / 0.35)) * fade;
           if (alpha <= 0.01) return;
           tctx.strokeStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
-          tctx.lineWidth = Math.max(0.25, 2.6 - 2.35 * g.t); /* thinnest furthest from the click */
+          tctx.lineWidth = Math.max(0.2, 1.5 - 1.3 * g.t); /* thinner overall, hairline at the far tips */
           tctx.beginPath(); tctx.moveTo(g.x1, g.y1); tctx.lineTo(g.x2, g.y2); tctx.stroke();
         });
       });
