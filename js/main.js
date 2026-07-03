@@ -232,7 +232,6 @@
     window.addEventListener('resize', sizeTrail);
 
     var TRAIL_MAX = 800;   /* px of line on screen */
-    var RETRACT = 8;       /* px eaten from the tail every frame: the self-erase */
     var pts = [];          /* head first */
     var allowed = 0; /* current permitted trail length: earned by movement, spent by retraction */
     window.addEventListener('mousemove', function (e) {
@@ -250,10 +249,9 @@
     function drawTrail() {
       if (pts.length < 2) { allowed = 0; return; }
       if (docEl.classList.contains('adhd')) {
-        allowed = allowed * 0.985 - 2; /* proportional decay: drawing always outpaces the erase */
-      } else {
-        allowed -= RETRACT;
+        allowed = allowed * 0.985 - 2; /* hard mode still burns off when idle */
       }
+      /* normal mode: no idle decay; the 800px trail stays put until the mouse moves again */
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       var run = 0;
