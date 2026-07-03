@@ -129,3 +129,17 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
   .card .media video,.card .media img,.card{transition:none}
   .js [data-reveal],.hero-copy,.cue,#nav,.hero video,#heroflip,.knockout{opacity:1 !important;transform:none !important;animation:none !important}
 }
+
+/* ---------- purple footer block (Culnane-style) ---------- */
+.pfoot{margin:16px;border-radius:24px;background:var(--accent);color:#0a0a0a;padding:34px 0 26px;overflow:hidden}
+.pfoot .plinks{display:flex;justify-content:center;gap:clamp(40px,9vw,140px);padding:0 30px 8px}
+.pfoot .plinks a{color:#0a0a0a;font-size:13.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px}
+.pfoot .pmq{position:relative;overflow:hidden;margin:26px 0 18px}
+.pfoot .pmq::before,.pfoot .pmq::after{content:"";position:absolute;top:0;bottom:0;width:14%;z-index:2;pointer-events:none}
+.pfoot .pmq::before{left:0;background:linear-gradient(90deg,var(--accent),rgba(108,92,231,0))}
+.pfoot .pmq::after{right:0;background:linear-gradient(270deg,var(--accent),rgba(108,92,231,0))}
+.pfoot .pmq .mq-track{animation:mq 34s linear infinite reverse}
+.pfoot .pmq span{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(64px,10vw,150px);letter-spacing:-2px;color:#0a0a0a;text-transform:uppercase;line-height:1}
+.pfoot .pcopy{text-align:center;font-size:12.5px;font-weight:600;letter-spacing:1.5px;color:#0a0a0a;padding-top:10px}
+.pfoot .pcopy a{color:#0a0a0a;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+@media(prefers-reduced-motion:reduce){.pfoot .pmq .mq-track{animation:none}}
