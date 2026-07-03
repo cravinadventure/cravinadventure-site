@@ -61,10 +61,13 @@ a{color:inherit;text-decoration:none}
 .motion-off .cue{opacity:1;animation:none}
 
 /* ---------- marquee ---------- */
-.marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel2);padding:22px 0}
+.marquee{position:relative;overflow:hidden;margin:16px;border-radius:18px;background:var(--accent);padding:22px 0}
+.marquee::before,.marquee::after{content:"";position:absolute;top:0;bottom:0;width:12%;z-index:2;pointer-events:none}
+.marquee::before{left:0;background:linear-gradient(90deg,var(--accent),rgba(108,92,231,0))}
+.marquee::after{right:0;background:linear-gradient(270deg,var(--accent),rgba(108,92,231,0))}
 .mq-track{display:flex;white-space:nowrap;width:max-content;animation:mq 30s linear infinite}
-.marquee.rev .mq-track{animation-direction:reverse}
-.mq-track span{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(26px,3.6vw,46px);letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.marquee .mq-track{animation-direction:reverse}
+.mq-track span{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(26px,3.6vw,46px);letter-spacing:2px;color:#0a0a0a;text-transform:uppercase}
 @keyframes mq{to{transform:translateX(-50%)}}
 .marquee.brand .mq-track span{color:var(--paper)}
 .marquee.brand .mq-track span em{font-style:normal;color:var(--accent)}
@@ -143,7 +146,7 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .pfoot .pmq::before,.pfoot .pmq::after{content:"";position:absolute;top:0;bottom:0;width:14%;z-index:2;pointer-events:none}
 .pfoot .pmq::before{left:0;background:linear-gradient(90deg,var(--accent),rgba(108,92,231,0))}
 .pfoot .pmq::after{right:0;background:linear-gradient(270deg,var(--accent),rgba(108,92,231,0))}
-.pfoot .pmq .mq-track{animation:mq 34s linear infinite reverse}
+.pfoot .pmq .mq-track{animation:mq 34s linear infinite;animation-direction:normal}
 .pfoot .pmq span{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(64px,10vw,150px);letter-spacing:-2px;color:#0a0a0a;text-transform:uppercase;line-height:1}
 .pfoot .pcopy{text-align:center;font-size:12.5px;font-weight:600;letter-spacing:1.5px;color:#0a0a0a;padding-top:10px}
 .pfoot .pcopy a{color:#0a0a0a;font-weight:700;text-decoration:underline;text-underline-offset:3px}
