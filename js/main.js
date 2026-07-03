@@ -281,7 +281,7 @@
       var spokes = 7 + Math.floor(Math.random() * 4);
       for (var s = 0; s < spokes; s++) {
         var ang = (s / spokes) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-        var len = 60 + Math.random() * 90;
+        var len = 130 + Math.random() * 200;
         if (len > maxR) maxR = len;
         var x = cx, y = cy, r = 0, n = 4 + Math.floor(Math.random() * 3);
         var along = [{ x: cx, y: cy, r: 0 }];
@@ -326,10 +326,9 @@
         var k = (now - c.born) / CRACK_MS;
         var fade = 1 - k * k; /* holds bright, then lets go */
         c.segs.forEach(function (g) {
-          var col = mixT(ORANGE, PURPLE, Math.min(1, g.t / 0.55));
           var alpha = (g.t < 0.65 ? 1 : Math.max(0, (1 - g.t) / 0.35)) * fade;
           if (alpha <= 0.01) return;
-          tctx.strokeStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha.toFixed(3) + ')';
+          tctx.strokeStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
           tctx.lineWidth = Math.max(0.5, 2.6 - 2 * g.t);
           tctx.beginPath(); tctx.moveTo(g.x1, g.y1); tctx.lineTo(g.x2, g.y2); tctx.stroke();
         });
