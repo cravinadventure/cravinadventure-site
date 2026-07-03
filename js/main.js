@@ -492,14 +492,14 @@
       if (now - obsAt > 600) refreshObstacles();
       balls = balls.filter(function (b) { return now - b.born < BALL_LIFE && b.x < W + 60; });
       balls.forEach(function (b) {
-        b.vy += 0.45; b.vx += 0.018; /* gravity tips down and a touch right: nothing ever sits still */
-        b.x += b.vx; b.y += b.vy;
+        b.vy += 0.45 * tickDt; b.vx += 0.018 * tickDt; /* gravity tips down and a touch right */
+        b.x += b.vx * tickDt; b.y += b.vy * tickDt;
         if (b.x < b.r) { b.x = b.r; b.vx = -b.vx * 0.8; }
         if (b.y > H - b.r) { b.y = H - b.r; b.vy = -b.vy * 0.62; b.vx *= 0.985; }
         if (b.vy > 0) { /* land on boxes */
           for (var i = 0; i < obstacles.length; i++) {
             var o = obstacles[i];
-            if (b.x > o.left && b.x < o.right && b.y + b.r > o.top && b.y + b.r < o.top + Math.max(14, b.vy + 2)) {
+            if (b.x > o.left && b.x < o.right && b.y + b.r > o.top && b.y + b.r < o.top + Math.max(14, b.vy * tickDt + 2)) {
               b.y = o.top - b.r; b.vy = -b.vy * 0.62; b.vx *= 0.985; break;
             }
           }
@@ -509,7 +509,7 @@
             var S = letterSolids[li];
             if (b.x > S.x - S.hw - b.r * 0.4 && b.x < S.x + S.hw + b.r * 0.4) {
               var topEdge = S.y - S.hh;
-              if (b.y + b.r > topEdge && b.y + b.r < topEdge + Math.max(14, b.vy + 2)) {
+              if (b.y + b.r > topEdge && b.y + b.r < topEdge + Math.max(14, b.vy * tickDt + 2)) {
                 b.y = topEdge - b.r; b.vy = -b.vy * 0.62; b.vx *= 0.985; break;
               }
             }
@@ -517,7 +517,7 @@
         }
         var age = now - b.born;
         var alpha = age > BALL_LIFE - 3000 ? Math.max(0, (BALL_LIFE - age) / 3000) : 1;
-        b.rot += b.vr; /* tumbling */
+        b.rot += b.vr * tickDt; /* tumbling */
         tctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
         if (b.shape === 'circle') {
           tctx.beginPath(); tctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); tctx.fill();
@@ -604,8 +604,9 @@
           letterSolids.push({ x: cx, y: cy, hw: L.hw, hh: L.hh });
         }
         if (L.vx || L.vy) {
-          L.x += L.vx; L.y += L.vy;
-          L.vx *= 0.95; L.vy *= 0.95; /* zero gravity: pure drift with space drag */
+          L.x += L.vx * tickDt; L.y += L.vy * tickDt;
+          var drag = Math.pow(0.95, tickDt);
+          L.vx *= drag; L.vy *= drag; /* zero gravity: pure drift with space drag */
           if (L.vx > -0.02 && L.vx < 0.02) L.vx = 0;
           if (L.vy > -0.02 && L.vy < 0.02) L.vy = 0;
           if (!L.moving) { L.moving = true; L.el.classList.add('moving'); } /* becomes a box only when first pushed */
@@ -651,12 +652,12 @@
       var now = Date.now(), W = window.innerWidth, H = window.innerHeight;
       glyphs = glyphs.filter(function (g) { return now - g.born < GLYPH_LIFE && g.x < W + 60; });
       glyphs.forEach(function (g) {
-        g.vy += 0.45; g.vx += 0.018; /* same tilted gravity as the shapes */
-        g.x += g.vx; g.y += g.vy; g.rot += g.vr;
+        g.vy += 0.45 * tickDt; g.vx += 0.018 * tickDt; /* same tilted gravity as the shapes */
+        g.x += g.vx * tickDt; g.y += g.vy * tickDt; g.rot += g.vr * tickDt;
         if (g.vy > 0) { /* bounce off the text lines below on the way down */
           for (var i = 0; i < inkRects.length; i++) {
             var e = inkRects[i];
-            if (g.x > e.r.left && g.x < e.r.right && g.y + g.hh > e.r.top && g.y + g.hh < e.r.top + Math.max(14, g.vy + 2)) {
+            if (g.x > e.r.left && g.x < e.r.right && g.y + g.hh > e.r.top && g.y + g.hh < e.r.top + Math.max(14, g.vy * tickDt + 2)) {
               g.y = e.r.top - g.hh; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
             }
           }
@@ -665,7 +666,7 @@
           if (Date.now() - obsAt > 600) refreshObstacles();
           for (var oi = 0; oi < obstacles.length; oi++) {
             var o = obstacles[oi];
-            if (g.x > o.left && g.x < o.right && g.y + g.hh > o.top && g.y + g.hh < o.top + Math.max(14, g.vy + 2)) {
+            if (g.x > o.left && g.x < o.right && g.y + g.hh > o.top && g.y + g.hh < o.top + Math.max(14, g.vy * tickDt + 2)) {
               g.y = o.top - g.hh; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
             }
           }
@@ -719,7 +720,11 @@
       }
       tctx.globalCompositeOperation = 'source-over';
     }
+    var tickDt = 1, lastTickAt = 0;
     function trailTick() {
+      var nowT = Date.now();
+      tickDt = lastTickAt ? Math.min(3, Math.max(0.4, (nowT - lastTickAt) / 16.667)) : 1;
+      lastTickAt = nowT;
       tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
       tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
