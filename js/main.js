@@ -591,10 +591,10 @@
         if (onscreen) {
           var cx = L.bx + L.x;
           var dx = cx - mouseX, dy = cy - mouseY;
-          if (dx > -26 && dx < 26 && dy > -26 && dy < 26) { /* only the cursor tip itself pushes */
+          if (dx > -55 && dx < 55 && dy > -55 && dy < 55) { /* a broader shove zone around the cursor */
             var d = Math.sqrt(dx * dx + dy * dy) || 1;
-            if (d < 26) {
-              var f = 1 - d / 26;
+            if (d < 55) {
+              var f = 1 - d / 55;
               /* momentum-led: letters fly the way the mouse is moving (any direction), radial shove secondary */
               L.vx += mvx * 0.55 * f + (dx / d) * f * 1.3;
               L.vy += mvy * 0.55 * f + (dy / d) * f * 1.3;
