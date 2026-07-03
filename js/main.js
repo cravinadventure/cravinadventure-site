@@ -282,10 +282,11 @@
     var cracks = [], CRACK_MS = 5000;
     function makeCrack(cx, cy) {
       var segs = [], spokePts = [], maxR = 0;
+      var size = 1 + Math.random(); /* each crack lands between 1x and 2x */
       var spokes = 7 + Math.floor(Math.random() * 4);
       for (var s = 0; s < spokes; s++) {
         var ang = (s / spokes) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-        var len = 130 + Math.random() * 200;
+        var len = (130 + Math.random() * 200) * size;
         if (len > maxR) maxR = len;
         var x = cx, y = cy, r = 0, n = 4 + Math.floor(Math.random() * 3);
         var along = [{ x: cx, y: cy, r: 0 }];
@@ -333,7 +334,7 @@
           var alpha = (g.t < 0.65 ? 1 : Math.max(0, (1 - g.t) / 0.35)) * fade;
           if (alpha <= 0.01) return;
           tctx.strokeStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
-          tctx.lineWidth = Math.max(0.5, 2.6 - 2 * g.t);
+          tctx.lineWidth = Math.max(0.25, 2.6 - 2.35 * g.t); /* thinnest furthest from the click */
           tctx.beginPath(); tctx.moveTo(g.x1, g.y1); tctx.lineTo(g.x2, g.y2); tctx.stroke();
         });
       });
