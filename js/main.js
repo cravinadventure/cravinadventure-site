@@ -208,6 +208,72 @@
     }, 33);
   }
 
+  /* ---------- cursor trail: orange head, purple fade, erases itself ---------- */
+  if (!reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+    var tc = document.createElement('canvas');
+    tc.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:300;pointer-events:none';
+    tc.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(tc);
+    var tctx = tc.getContext('2d');
+    var tdpr = 1;
+    function sizeTrail() {
+      tdpr = Math.min(window.devicePixelRatio || 1, 2);
+      tc.width = window.innerWidth * tdpr; tc.height = window.innerHeight * tdpr;
+    }
+    sizeTrail();
+    window.addEventListener('resize', sizeTrail);
+
+    var TRAIL_MAX = 100;   /* px of line on screen */
+    var RETRACT = 3.5;     /* px eaten from the tail every frame: the self-erase */
+    var pts = [];          /* head first */
+    window.addEventListener('mousemove', function (e) {
+      var h = pts[0];
+      if (h && Math.abs(h.x - e.clientX) < 1 && Math.abs(h.y - e.clientY) < 1) return;
+      pts.unshift({ x: e.clientX, y: e.clientY });
+      if (pts.length > 300) pts.length = 300;
+    }, { passive: true });
+
+    var allowed = 0; /* current permitted trail length */
+    function mixT(a, b, t) {
+      return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
+    }
+    var ORANGE = [255, 122, 26], PURPLE = [108, 92, 231];
+    function trailTick() {
+      tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
+      tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      if (pts.length < 2) { allowed = 0; return; }
+      /* grow toward the cap while moving, always retract: net effect erases when idle */
+      allowed = Math.min(allowed + 24, TRAIL_MAX) - RETRACT;
+      if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
+      tctx.lineCap = 'round'; tctx.lineJoin = 'round';
+      var run = 0;
+      for (var i = 0; i < pts.length - 1; i++) {
+        var a = pts[i], b = pts[i + 1];
+        var dx = b.x - a.x, dy = b.y - a.y;
+        var seg = Math.sqrt(dx * dx + dy * dy);
+        if (seg === 0) continue;
+        var end = b, cut = false;
+        if (run + seg > allowed) { /* trim the tail mid-segment */
+          var k = (allowed - run) / seg;
+          end = { x: a.x + dx * k, y: a.y + dy * k };
+          cut = true;
+        }
+        var t = Math.min(1, (run + seg / 2) / allowed); /* 0 head -> 1 tail */
+        var col = mixT(ORANGE, PURPLE, Math.min(1, t / 0.55));
+        var alpha = t < 0.65 ? 1 : Math.max(0, (1 - t) / 0.35); /* purple sinks to black */
+        tctx.strokeStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha.toFixed(3) + ')';
+        tctx.lineWidth = 3 - 2 * t;
+        tctx.beginPath(); tctx.moveTo(a.x, a.y); tctx.lineTo(end.x, end.y); tctx.stroke();
+        run += seg;
+        if (cut) { pts.length = i + 2; pts[i + 1] = end; break; }
+      }
+    }
+    var lastTrailAt = 0;
+    function trailFrame() { lastTrailAt = Date.now(); trailTick(); requestAnimationFrame(trailFrame); }
+    requestAnimationFrame(trailFrame);
+    setInterval(function () { if (Date.now() - lastTrailAt > 500) trailTick(); }, 250);
+  }
+
   /* ---------- boot ---------- */
   function boot() {
     fitKnockout();
