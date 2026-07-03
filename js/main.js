@@ -399,7 +399,7 @@
       var on = docEl.classList.toggle('adhd');
       adhdBtn.setAttribute('aria-pressed', String(on));
       if (on) { refreshObstacles(); for (var i = 0; i < 6; i++) spawnBall(); scheduleBall(); }
-      else { clearTimeout(spawnTimer); balls = []; }
+      else { clearTimeout(spawnTimer); balls = []; cracks = []; }
     });
     /* ---- text ink map: the trail passes UNDER words (normal mode) ---- */
     var inkRects = [], inkAt = 0;
