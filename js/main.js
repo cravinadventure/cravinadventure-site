@@ -361,11 +361,11 @@
       if (!balls.length) return;
       var now = Date.now(), W = window.innerWidth, H = window.innerHeight;
       if (now - obsAt > 600) refreshObstacles();
-      balls = balls.filter(function (b) { return now - b.born < BALL_LIFE; });
+      balls = balls.filter(function (b) { return now - b.born < BALL_LIFE && b.x < W + 60; });
       balls.forEach(function (b) {
-        b.vy += 0.45; b.x += b.vx; b.y += b.vy; /* gravity */
+        b.vy += 0.45; b.vx += 0.045; /* gravity tips down-and-right: nothing ever sits still */
+        b.x += b.vx; b.y += b.vy;
         if (b.x < b.r) { b.x = b.r; b.vx = -b.vx * 0.8; }
-        if (b.x > W - b.r) { b.x = W - b.r; b.vx = -b.vx * 0.8; }
         if (b.y > H - b.r) { b.y = H - b.r; b.vy = -b.vy * 0.62; b.vx *= 0.985; }
         if (b.vy > 0) { /* land on words and boxes */
           for (var i = 0; i < obstacles.length; i++) {
