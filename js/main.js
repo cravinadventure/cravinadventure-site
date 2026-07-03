@@ -548,7 +548,7 @@
           var st = getComputedStyle(sp);
           glyphs.push({ ch: sp.textContent, x: r.left + r.width / 2, y: r.top + r.height / 2,
             vx: (Math.random() - 0.5) * 1.2, vy: 0.4 + Math.random() * 0.9,
-            rot: 0, vr: (Math.random() - 0.5) * 0.18,
+            rot: 0, vr: 0.04 + Math.random() * 0.14, /* letters always roll clockwise */
             font: st.fontWeight + ' ' + st.fontSize + ' ' + st.fontFamily,
             stretch: st.fontStretch, born: Date.now() });
           if (glyphs.length > 400) glyphs.shift();
