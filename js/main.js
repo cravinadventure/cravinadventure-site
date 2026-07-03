@@ -107,31 +107,15 @@
     });
   });
 
-  /* ---------- hero flipbook: stills from the animation library ---------- */
-  var FLIP_COUNT = 21;
-  var flipEl = document.getElementById('heroflip');
-  var flipIdx = 1;
-  var flipCache = [];
-  function flipSrc(n) { return 'assets/flip/flip_' + (n < 10 ? '0' + n : n) + '.jpg'; }
-  function preloadFlip(n) {
-    if (flipCache[n]) return;
-    var im = new Image(); im.src = flipSrc(n); flipCache[n] = im;
-  }
-  if (flipEl && !reduceMotion) {
-    preloadFlip(2); preloadFlip(3);
-    setInterval(function () {
-      flipIdx = flipIdx % FLIP_COUNT + 1;
-      flipEl.src = flipSrc(flipIdx);
-      preloadFlip(flipIdx % FLIP_COUNT + 1);
-      preloadFlip((flipIdx + 1) % FLIP_COUNT + 1);
-    }, 1400);
-  }
+  /* hero reel: 2s cuts from every animation in the library, back to back */
 
   /* ---------- boot ---------- */
   function boot() {
     fitKnockout();
     window.addEventListener('resize', fitKnockout);
     document.body.classList.add('loaded');
+    var hv = document.getElementById('herovid');
+    if (hv && !reduceMotion) { var hp = hv.play(); if (hp && hp.catch) hp.catch(function () {}); }
   }
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(boot);
