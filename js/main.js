@@ -15,12 +15,30 @@
   function fitKnockout() {
     if (!svg || !kts.length) return;
     var w = svg.clientWidth || window.innerWidth;
+    var hgt = svg.clientHeight || window.innerHeight;
     var pad = Math.max(w * 0.02, 12);
+    var sizes = [];
     kts.forEach(function (t) {
       t.setAttribute('font-size', '100');
       var len = t.getComputedTextLength();
-      if (len > 0) t.setAttribute('font-size', String(100 * (w - pad * 2) / len));
+      var fs = len > 0 ? 100 * (w - pad * 2) / len : 100;
+      t.setAttribute('font-size', String(fs));
+      sizes.push(fs);
     });
+    /* equal VISUAL gaps: lines differ in cap height, so space by cap height, not fixed % */
+    if (kts.length === 3) {
+      var CAP = 0.72; /* Archivo cap-height ratio */
+      var caps = sizes.map(function (s) { return s * CAP; });
+      var topCap = hgt * 0.13;            /* top of CRAVIN' */
+      var bottomBase = hgt * 0.815;       /* baseline of STUDIOS */
+      var gap = (bottomBase - topCap - caps[0] - caps[1] - caps[2]) / 2;
+      var y1 = topCap + caps[0];
+      var y2 = y1 + gap + caps[1];
+      var y3 = y2 + gap + caps[2];
+      kts[0].setAttribute('y', String(y1));
+      kts[1].setAttribute('y', String(y2));
+      kts[2].setAttribute('y', String(y3));
+    }
   }
 
   /* ---------- letter-roll: split link text into per-letter spans ---------- */
