@@ -55,10 +55,11 @@
     var text = link.textContent;
     link.textContent = '';
     link.setAttribute('aria-label', text);
+    var mid = (text.length - 1) / 2;
     Array.prototype.forEach.call(text, function (ch, i) {
       var s = document.createElement('span');
       s.className = 'ch';
-      s.style.setProperty('--i', i);
+      s.style.setProperty('--i', Math.abs(i - mid)); /* middle-out: ripple to both edges */
       var glyph = ch === ' ' ? '\u00A0' : ch; /* inline-block collapses plain spaces */
       s.setAttribute('data-ch', glyph);
       s.setAttribute('aria-hidden', 'true');
