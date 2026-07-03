@@ -218,5 +218,6 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .svc-hidden{display:none}
 .svc-open .svc-hidden{display:flex;animation:svcin .35s ease both}
 @keyframes svcin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.svc-toggle{margin-top:20px;display:inline-block;background:transparent;border:1.5px solid var(--accent);border-radius:3px;color:var(--accent);font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:12px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;padding:12px 24px;transition:background .2s,color .2s}
-.svc-toggle:hover{background:var(--accent);color:#0a0a0a}
+.svc-more{cursor:pointer}
+.svc-more b{color:var(--accent)}
+.svc-more > span{opacity:.85}

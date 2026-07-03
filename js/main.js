@@ -93,21 +93,33 @@
     });
   });
 
-  /* ---------- services groups: top 5 visible, the rest behind a View-all toggle ---------- */
+  /* ---------- services groups: top 5 as rows, the rest named in a clickable "More ..." row ---------- */
   document.querySelectorAll('.svc-group').forEach(function (group) {
     var rows = group.querySelectorAll('.svc');
     if (rows.length <= 6) return; /* no point hiding a single row */
-    for (var i = 5; i < rows.length; i++) rows[i].classList.add('svc-hidden');
-    var btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'svc-toggle';
-    btn.textContent = 'View all ' + rows.length + ' ↓';
-    btn.setAttribute('aria-expanded', 'false');
-    btn.addEventListener('click', function () {
-      var open = group.classList.toggle('svc-open');
-      btn.textContent = open ? 'Show less ↑' : 'View all ' + rows.length + ' ↓';
-      btn.setAttribute('aria-expanded', String(open));
-    });
-    group.appendChild(btn);
+    var hiddenTitles = [];
+    for (var i = 5; i < rows.length; i++) {
+      rows[i].classList.add('svc-hidden');
+      hiddenTitles.push(rows[i].querySelector('b').textContent.trim());
+    }
+    var joined = hiddenTitles.join(', ');
+    var more = document.createElement('div');
+    more.className = 'svc svc-more';
+    more.setAttribute('role', 'button');
+    more.tabIndex = 0;
+    more.setAttribute('aria-expanded', 'false');
+    var mb = document.createElement('b'); mb.textContent = 'More …';
+    var ms = document.createElement('span'); ms.textContent = joined;
+    more.appendChild(mb); more.appendChild(ms);
+    group.querySelector('.svc-list').appendChild(more);
+    function setOpen(open) {
+      group.classList.toggle('svc-open', open);
+      mb.textContent = open ? 'Less …' : 'More …';
+      ms.textContent = open ? '' : joined;
+      more.setAttribute('aria-expanded', String(open));
+    }
+    more.addEventListener('click', function () { setOpen(!group.classList.contains('svc-open')); });
+    more.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setOpen(!group.classList.contains('svc-open')); } });
   });
 
   /* ---------- services rows: if a row holds a link, the whole row is clickable ---------- */
