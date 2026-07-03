@@ -104,8 +104,8 @@ main section, footer{padding:110px 34px}
 .stat{text-align:right;white-space:nowrap}
 .stat b{display:block;font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(22px,2.6vw,34px);color:var(--accent);letter-spacing:-.5px}
 .stat > span{font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
-.live{position:relative;padding-left:20px}
-.live::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:var(--accent);animation:pulse 1.6s ease-in-out infinite}
+.live{position:relative;padding-left:15px}
+.live::before{content:"";position:absolute;left:-3px;top:-2px;width:11px;height:11px;border-radius:50%;background:var(--accent);animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .alllink{text-align:center;margin-top:36px}
 .alllink a{color:var(--accent);font-weight:600;font-size:15px;letter-spacing:.5px}
