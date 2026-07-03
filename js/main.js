@@ -571,6 +571,7 @@
           L.vx *= 0.95; L.vy *= 0.95; /* zero gravity: pure drift with space drag */
           if (L.vx > -0.02 && L.vx < 0.02) L.vx = 0;
           if (L.vy > -0.02 && L.vy < 0.02) L.vy = 0;
+          if (!L.moving) { L.moving = true; L.el.classList.add('moving'); } /* becomes a box only when first pushed */
           L.el.style.transform = 'translate(' + L.x.toFixed(1) + 'px,' + L.y.toFixed(1) + 'px)';
         }
       }
@@ -584,7 +585,7 @@
           L.x = L.y = 0;
         }
       });
-      setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; }); }, 900);
+      setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; if (L.moving) { L.moving = false; L.el.classList.remove('moving'); } }); }, 900);
     }
     /* ---- hover letter-drop: the word's letters fall with shape physics, purple drops in ---- */
     var glyphs = [];
