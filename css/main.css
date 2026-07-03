@@ -32,13 +32,11 @@ a{color:inherit;text-decoration:none}
 #nav a{font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
 .ig{color:var(--accent)}
 
-/* ---------- letter-roll ---------- */
+/* ---------- letter drop: white letters fall away, purple word drops in from above ---------- */
 .lr{display:inline-block;overflow:hidden;vertical-align:bottom}
-.lr .ch{display:inline-block;position:relative;transition:transform .3s var(--ease-roll);transition-delay:calc(var(--i)*55ms)}
-.lr .ch::after{content:attr(data-ch);position:absolute;left:0;top:100%;color:var(--accent)}
-@media(hover:hover){
-  .lr:hover .ch, .lr:focus-visible .ch{transform:translateY(-100%)}
-}
+.lr .ch{display:inline-block;position:relative;transition:color .55s ease}
+.lr.dropfx .ch{color:var(--accent);transition:none;animation:chdrop .38s cubic-bezier(.2,.6,.3,1) backwards;animation-delay:calc(var(--i)*40ms)}
+@keyframes chdrop{from{transform:translateY(-130%)}to{transform:translateY(0)}}
 
 /* ---------- hero ---------- */
 .hero{position:relative;height:100vh;min-height:560px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
@@ -163,6 +161,7 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
   html{scroll-behavior:auto}
   .mono-spin,.mq-track,.live::before{animation:none}
   .lr .ch{transition:none}
+  .lr.dropfx .ch{animation:none}
   .card .media video,.card .media img,.card{transition:none}
   .js [data-reveal],.hero-copy,#nav,.hero video,#heroflip,.knockout{opacity:1 !important;transform:none !important;animation:none !important}
 }

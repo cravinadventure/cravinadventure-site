@@ -537,6 +537,54 @@
       });
       setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; }); }, 900);
     }
+    /* ---- hover letter-drop: the word's letters fall with shape physics, purple drops in ---- */
+    var glyphs = [];
+    document.querySelectorAll('.lr').forEach(function (link) {
+      link.addEventListener('mouseenter', function () {
+        if (adhdOn()) return; /* ADHD mode has its own letter chaos */
+        link.querySelectorAll('.ch').forEach(function (sp) {
+          var r = sp.getBoundingClientRect();
+          if (!r.width) return;
+          var st = getComputedStyle(sp);
+          glyphs.push({ ch: sp.textContent, x: r.left + r.width / 2, y: r.top + r.height / 2,
+            vx: (Math.random() - 0.5) * 1.2, vy: 0.4 + Math.random() * 0.9,
+            rot: 0, vr: (Math.random() - 0.5) * 0.18,
+            font: st.fontWeight + ' ' + st.fontSize + ' ' + st.fontFamily,
+            stretch: st.fontStretch, born: Date.now() });
+          if (glyphs.length > 400) glyphs.shift();
+        });
+        link.classList.add('dropfx');
+      });
+      link.addEventListener('mouseleave', function () { link.classList.remove('dropfx'); });
+    });
+    var GLYPH_LIFE = 9000;
+    function drawGlyphs() {
+      if (!glyphs.length) return;
+      var now = Date.now(), W = window.innerWidth, H = window.innerHeight;
+      glyphs = glyphs.filter(function (g) { return now - g.born < GLYPH_LIFE && g.x < W + 60; });
+      glyphs.forEach(function (g) {
+        g.vy += 0.45; g.vx += 0.018; /* same tilted gravity as the shapes */
+        g.x += g.vx; g.y += g.vy; g.rot += g.vr;
+        if (g.vy > 0) { /* bounce off the text lines below on the way down */
+          for (var i = 0; i < inkRects.length; i++) {
+            var e = inkRects[i];
+            if (g.x > e.r.left && g.x < e.r.right && g.y + 7 > e.r.top && g.y + 7 < e.r.top + Math.max(14, g.vy + 2)) {
+              g.y = e.r.top - 7; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
+            }
+          }
+        }
+        if (g.y > H - 8) { g.y = H - 8; g.vy = -g.vy * 0.55; g.vx *= 0.985; }
+        var age = now - g.born;
+        var alpha = age > GLYPH_LIFE - 1500 ? Math.max(0, (GLYPH_LIFE - age) / 1500) : 1;
+        tctx.save(); tctx.translate(g.x, g.y); tctx.rotate(g.rot);
+        tctx.font = g.font;
+        if ('fontStretch' in tctx) tctx.fontStretch = g.stretch;
+        tctx.fillStyle = 'rgba(244,244,244,' + alpha.toFixed(3) + ')';
+        tctx.textAlign = 'center'; tctx.textBaseline = 'middle';
+        tctx.fillText(g.ch, 0, 0);
+        tctx.restore();
+      });
+    }
     var adhdBtn = document.getElementById('adhdbtn');
     if (adhdBtn) adhdBtn.addEventListener('click', function () {
       var on = docEl.classList.toggle('adhd');
@@ -579,6 +627,7 @@
       tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       drawTrail(); /* handles its own under/over layering around text */
+      drawGlyphs(); /* letters shed by hovered words, tumbling with gravity */
       if (adhdOn()) updateLetters(); /* the cursor is a broom; shapes knock letters too */
       mvx *= 0.7; mvy *= 0.7;
       drawCracks();
