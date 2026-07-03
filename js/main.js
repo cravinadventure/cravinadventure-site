@@ -68,6 +68,31 @@
     });
   });
 
+  /* ---------- nav anchors: land exactly, immune to the mobile URL-bar resize ---------- */
+  document.querySelectorAll('#nav a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      ev.preventDefault();
+      var isContact = a.getAttribute('href') === '#contact';
+      function target() {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        if (isContact) return max; /* contact: all the way down */
+        return Math.min(Math.max(0, el.getBoundingClientRect().top + window.scrollY - 64), max);
+      }
+      var behave = reduceMotion ? 'auto' : 'smooth';
+      window.scrollTo({ top: target(), behavior: behave });
+      var checks = 0;
+      var iv = setInterval(function () { /* URL bar collapse shifts the goalposts: re-aim */
+        checks++;
+        var t = target();
+        if (Math.abs(window.scrollY - t) > 8) window.scrollTo({ top: t, behavior: checks >= 2 ? 'instant' : behave });
+        if (checks >= 2 && Math.abs(window.scrollY - target()) <= 8) clearInterval(iv);
+        if (checks >= 4) clearInterval(iv);
+      }, 500);
+    });
+  });
+
   /* ---------- services rows: if a row holds a link, the whole row is clickable ---------- */
   document.querySelectorAll('.svc').forEach(function (row) {
     var a = row.querySelector('a[href]');
