@@ -222,7 +222,7 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .svc-more b{color:var(--accent)}
 .svc-more > span{opacity:.85}
 /* ---------- services search ---------- */
-.svc-search{max-width:1240px;margin:0 auto;padding:0 34px 6px}
+.svc-search{max-width:1240px;margin:0 auto;padding:26px 34px 6px}
 #svcsearch{width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);border-radius:3px;color:var(--paper);font-family:"Montserrat",sans-serif;font-size:14px;padding:12px 16px;outline:none;transition:border-color .2s;-webkit-appearance:none}
 #svcsearch:focus{border-color:var(--accent)}
 #svcsearch::placeholder{color:var(--muted)}
