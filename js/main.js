@@ -234,7 +234,10 @@
     var TRAIL_MAX = 800;   /* px of line on screen */
     var pts = [];          /* head first */
     var allowed = 0; /* current permitted trail length: earned by movement, spent by retraction */
+    var mouseX = -9999, mouseY = -9999, mvx = 0, mvy = 0;
     window.addEventListener('mousemove', function (e) {
+      if (mouseX > -9999) { mvx = e.clientX - mouseX; mvy = e.clientY - mouseY; }
+      mouseX = e.clientX; mouseY = e.clientY;
       var h = pts[0];
       if (h && Math.abs(h.x - e.clientX) < 1 && Math.abs(h.y - e.clientY) < 1) return;
       if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(e.clientX - h.x, e.clientY - h.y));
@@ -422,12 +425,96 @@
         }
       });
     }
+    /* ---- letter physics: the cursor shoves letters around, zero-G (ADHD mode) ---- */
+    var letters = [], letterized = false;
+    function letterize() {
+      if (letterized) return; letterized = true;
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          var p = n.parentElement;
+          if (!p || p.closest('svg,script,style,.adhd-btn,.mq-track,.pmq,.lr')) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      var nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(function (n) {
+        var frag = document.createDocumentFragment(), s = n.nodeValue;
+        for (var i = 0; i < s.length; i++) {
+          var ch = s[i];
+          if (/\s/.test(ch)) { frag.appendChild(document.createTextNode(ch)); continue; }
+          var sp = document.createElement('span');
+          sp.className = 'phys'; sp.textContent = ch;
+          frag.appendChild(sp);
+        }
+        n.parentNode.replaceChild(frag, n);
+      });
+      document.querySelectorAll('span.phys, .lr .ch').forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (!r.width) return;
+        var fixed = !!el.closest('#nav');
+        letters.push({ el: el, fixed: fixed, bx: r.left + r.width / 2,
+          by: r.top + r.height / 2 + (fixed ? 0 : window.scrollY),
+          x: 0, y: 0, vx: 0, vy: 0 });
+      });
+    }
+    function updateLetters() {
+      if (!letters.length) return;
+      var H = window.innerHeight, sy = window.scrollY;
+      for (var i = 0; i < letters.length; i++) {
+        var L = letters[i];
+        var cy = (L.fixed ? L.by : L.by - sy) + L.y;
+        var onscreen = cy > -150 && cy < H + 150;
+        if (onscreen) {
+          var cx = L.bx + L.x;
+          var dx = cx - mouseX, dy = cy - mouseY;
+          if (dx > -80 && dx < 80 && dy > -80 && dy < 80) { /* the broom */
+            var d = Math.sqrt(dx * dx + dy * dy) || 1;
+            if (d < 80) {
+              var f = 1 - d / 80;
+              L.vx += (dx / d) * f * 3 + mvx * 0.12 * f;
+              L.vy += (dy / d) * f * 3 + mvy * 0.12 * f;
+            }
+          }
+          for (var bi = 0; bi < balls.length; bi++) { /* falling shapes knock letters */
+            var B = balls[bi];
+            var bdx = cx - B.x, bdy = cy - B.y, rr = B.r + 9;
+            if (bdx > -rr && bdx < rr && bdy > -rr && bdy < rr) {
+              var bd = Math.sqrt(bdx * bdx + bdy * bdy) || 1;
+              if (bd < rr) {
+                var kick = Math.min(6, Math.sqrt(B.vx * B.vx + B.vy * B.vy) * 0.3 + 0.4);
+                L.vx += (bdx / bd) * kick; L.vy += (bdy / bd) * kick;
+              }
+            }
+          }
+        }
+        if (L.vx || L.vy) {
+          L.x += L.vx; L.y += L.vy;
+          L.vx *= 0.95; L.vy *= 0.95; /* zero gravity: pure drift with space drag */
+          if (L.vx > -0.02 && L.vx < 0.02) L.vx = 0;
+          if (L.vy > -0.02 && L.vy < 0.02) L.vy = 0;
+          L.el.style.transform = 'translate(' + L.x.toFixed(1) + 'px,' + L.y.toFixed(1) + 'px)';
+        }
+      }
+    }
+    function lettersHome() {
+      letters.forEach(function (L) {
+        L.vx = L.vy = 0;
+        if (L.x || L.y) {
+          L.el.style.transition = 'transform .8s cubic-bezier(.22,1,.36,1)';
+          L.el.style.transform = '';
+          L.x = L.y = 0;
+        }
+      });
+      setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; }); }, 900);
+    }
     var adhdBtn = document.getElementById('adhdbtn');
     if (adhdBtn) adhdBtn.addEventListener('click', function () {
       var on = docEl.classList.toggle('adhd');
       adhdBtn.setAttribute('aria-pressed', String(on));
-      if (on) { refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall(); }
-      else { clearTimeout(spawnTimer); balls = []; cracks = []; }
+      if (on) { letterize(); refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall(); }
+      else { clearTimeout(spawnTimer); balls = []; cracks = []; lettersHome(); }
     });
     /* ---- text ink map: the trail passes UNDER words (normal mode) ---- */
     var inkRects = [], inkAt = 0;
@@ -467,6 +554,8 @@
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       drawTrail();
       if (!adhdOn()) maskTrailUnderText(); /* words stay on top of the line */
+      else updateLetters(); /* the cursor is a broom; shapes knock letters too */
+      mvx *= 0.7; mvy *= 0.7;
       drawCracks();
       drawBalls();
     }
