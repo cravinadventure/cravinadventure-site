@@ -338,7 +338,7 @@
       strokeSegs(overs);       /* ...and these lie on top */
     }
     /* ---- click fracture: spider-web crack from the click point, 5s fade ---- */
-    var cracks = [], CRACK_MS = 5000;
+    var cracks = [], CRACK_MS = 3200;
     function makeCrack(cx, cy) {
       var segs = [], spokePts = [], maxR = 0;
       var size = 0.35 + Math.random() * 2.15; /* wider spread: tiny chips to huge shatters */
@@ -522,13 +522,14 @@
       var nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
       nodes.forEach(function (n) {
-        var frag = document.createDocumentFragment(), s = n.nodeValue;
+        var frag = document.createDocumentFragment(), s = n.nodeValue, word = null;
         for (var i = 0; i < s.length; i++) {
           var ch = s[i];
-          if (/\s/.test(ch)) { frag.appendChild(document.createTextNode(ch)); continue; }
+          if (/\s/.test(ch)) { word = null; frag.appendChild(document.createTextNode(ch)); continue; }
+          if (!word) { word = document.createElement('span'); word.className = 'physw'; frag.appendChild(word); }
           var sp = document.createElement('span');
           sp.className = 'phys'; sp.textContent = ch;
-          frag.appendChild(sp);
+          word.appendChild(sp);
         }
         n.parentNode.replaceChild(frag, n);
       });
