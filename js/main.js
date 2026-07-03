@@ -112,18 +112,18 @@
   /* ---------- curved ribbon marquee: text rides the path ---------- */
   var tp = document.getElementById('ribbonTP');
   if (tp && !reduceMotion) {
-    var third = null;
+    var third = 0;
+    function ribbonMeasure() {
+      try { var t = tp.getComputedTextLength(); if (t) third = t / 3; } catch (e) {}
+    }
+    ribbonMeasure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ribbonMeasure);
     function ribbonTick() {
-      try {
-        if (third === null) {
-          var total = tp.getComputedTextLength();
-          if (!total) return;
-          third = total / 3; /* content repeats 3x */
-        }
-        var speed = 90; /* px per second along the path */
-        var off = -((Date.now() / 1000 * speed) % third);
-        tp.setAttribute('startOffset', String(off));
-      } catch (e) {}
+      if (!third) { ribbonMeasure(); return; }
+      /* left-to-right: offset climbs from -third up to 0, then wraps */
+      var speed = 90; /* path units per second */
+      var off = -third + ((Date.now() / 1000 * speed) % third);
+      tp.setAttribute('startOffset', String(off));
     }
     setInterval(ribbonTick, 33);
   }
