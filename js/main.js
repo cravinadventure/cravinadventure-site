@@ -176,29 +176,9 @@
 
   /* ---------- curved ribbon marquee: text rides the path ---------- */
   var tp = document.getElementById('ribbonTP');
+  if (reduceMotion) { var ra = document.getElementById('ribbonAnim'); if (ra) ra.remove(); }
   if (tp && !reduceMotion) {
-    /* SMIL drives the belt: native SVG loop, no per-frame JS, no WebKit repaint flicker */
-    var ribbonArmedFor = 0;
-    function armRibbon() {
-      var t = 0;
-      try { t = tp.getComputedTextLength(); } catch (e) {}
-      if (!t || Math.abs(t - ribbonArmedFor) < 1) return;
-      ribbonArmedFor = t;
-      var third = t / 3, speed = 230;
-      var old = document.getElementById('ribbonAnim');
-      if (old) old.remove();
-      var a = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
-      a.setAttribute('id', 'ribbonAnim');
-      a.setAttribute('attributeName', 'startOffset');
-      a.setAttribute('from', String(-third));
-      a.setAttribute('to', '0');
-      a.setAttribute('dur', (third / speed).toFixed(4) + 's');
-      a.setAttribute('repeatCount', 'indefinite');
-      tp.appendChild(a);
-    }
-    armRibbon();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(armRibbon);
-    setTimeout(armRibbon, 2500); /* late font swap safety */
+    /* belt motion lives in static SMIL markup: textLength pins the geometry, loop is exact */
     /* scroll-velocity heat: purple -> orange, grainy dissolve back */
     var grainA = document.getElementById('grainA');
     var grainT = document.getElementById('grainT');
@@ -272,6 +252,8 @@
     var pts = [];          /* head first */
     var allowed = 0; /* current permitted trail length: earned by movement, spent by retraction */
     var mouseX = -9999, mouseY = -9999, mvx = 0, mvy = 0;
+    var coarsePointer = window.matchMedia('(pointer:coarse)').matches;
+    var lastTouchAt = 0;
     function onMove(px, py, noTrail) {
       if (mouseX > -9999) { mvx = px - mouseX; mvy = py - mouseY; }
       mouseX = px; mouseY = py;
@@ -293,8 +275,8 @@
       pts.unshift({ x: px, y: py, u: blk ? !!blk.__inkUnder : false });
       if (pts.length > 12000) pts.length = 12000;
     }
-    window.addEventListener('mousemove', function (e) { onMove(e.clientX, e.clientY); }, { passive: true });
-    window.addEventListener('touchmove', function (e) { var t = e.touches[0]; if (t) onMove(t.clientX, t.clientY, true); }, { passive: true });
+    window.addEventListener('mousemove', function (e) { onMove(e.clientX, e.clientY, coarsePointer || Date.now() - lastTouchAt < 1500); }, { passive: true });
+    window.addEventListener('touchmove', function (e) { lastTouchAt = Date.now(); var t = e.touches[0]; if (t) onMove(t.clientX, t.clientY, true); }, { passive: true });
 
     function mixT(a, b, t) {
       return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
@@ -383,14 +365,26 @@
       cracks.push(makeCrack(px, py));
       if (cracks.length > 12) cracks.shift();
     }
-    var lastTouchAt = 0;
     window.addEventListener('mousedown', function (e) {
       if (e.button !== 0 || Date.now() - lastTouchAt < 800) return; /* skip the synthesized mousedown after a tap */
       crackAt(e.clientX, e.clientY, e.target);
     });
+    var tapStart = null;
     window.addEventListener('touchstart', function (e) {
       lastTouchAt = Date.now();
-      var t = e.touches[0]; if (t) crackAt(t.clientX, t.clientY, e.target);
+      var t = e.touches[0];
+      tapStart = t ? { x: t.clientX, y: t.clientY, at: Date.now() } : null;
+    }, { passive: true });
+    window.addEventListener('touchend', function (e) {
+      lastTouchAt = Date.now();
+      if (!tapStart) return;
+      var t = e.changedTouches[0];
+      if (t) {
+        var dx = t.clientX - tapStart.x, dy = t.clientY - tapStart.y;
+        /* a tap is quick and still; a scroll moves — scrolls never crack */
+        if (Date.now() - tapStart.at < 350 && dx * dx + dy * dy < 120) crackAt(t.clientX, t.clientY, e.target);
+      }
+      tapStart = null;
     }, { passive: true });
     function drawCracks() {
       if (!cracks.length) return;
@@ -635,7 +629,7 @@
       var on = docEl.classList.toggle('adhd');
       adhdBtn.setAttribute('aria-pressed', String(on));
       if (on) { letterize(); refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall(); }
-      else { clearTimeout(spawnTimer); balls = []; cracks = []; lettersHome(); }
+      else { clearTimeout(spawnTimer); balls = []; cracks = []; pts.length = 0; allowed = 0; lettersHome(); }
     });
     /* ---- text ink map: the trail passes UNDER words (normal mode) ---- */
     var inkRects = [], inkAt = 0;
