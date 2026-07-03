@@ -408,6 +408,8 @@
       var H = window.innerHeight;
       var sel = 'h1,h2,h3,p,li,button,.svc b,.svc span,.ctag,.stat,.card h3,.meta,#nav a,.ig-corner,.alllink a,footer a,.pfoot a,.pcopy,.mq-track,.pmq';
       document.querySelectorAll(sel).forEach(function (el) {
+        if (el.__inkUnder === undefined) el.__inkUnder = Math.random() < 0.5; /* each text block picks a side once */
+        if (!el.__inkUnder) return; /* this one lets the line ride OVER it */
         var er = el.getBoundingClientRect();
         if (er.top > H || er.bottom < 0 || er.width === 0) return;
         var rng = document.createRange(); rng.selectNodeContents(el);
