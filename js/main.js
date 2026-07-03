@@ -125,8 +125,6 @@
       var off = -third + ((Date.now() / 1000 * speed) % third);
       tp.setAttribute('startOffset', String(off));
     }
-    setInterval(ribbonTick, 33);
-
     /* scroll-velocity heat: purple -> orange, grainy dissolve back */
     var grainA = document.getElementById('grainA');
     var grainT = document.getElementById('grainT');
@@ -152,25 +150,35 @@
       var m = pa.map(function (x, i) { return Math.round(x + (pb[i] - x) * t); });
       return 'rgb(' + m[0] + ',' + m[1] + ',' + m[2] + ')';
     }
-    setInterval(function () {
-      /* velocity by position polling (no reliance on scroll events) */
+    var lastApplied = -1;
+    function frame() {
+      /* ribbon text: frame-synced, time-based (no interval jitter) */
+      ribbonTick();
+      /* velocity by position polling */
       var now = Date.now(), y = window.scrollY;
       var dt = Math.max(now - lastT, 1);
-      var v = Math.abs(y - lastY) / dt * 1000;
-      lastY = y; lastT = now;
-      var target = Math.min(1, v / 1300);
-      if (target > heat) {
-        if (wasCold && grainT) { grainT.setAttribute('seed', String(Math.floor(Math.random() * 1000))); }
-        wasCold = false;
-        heat = target;
+      if (dt >= 30) {
+        var v = Math.abs(y - lastY) / dt * 1000;
+        lastY = y; lastT = now;
+        var target = Math.min(1, v / 1300);
+        if (target > heat) {
+          if (wasCold && grainT) { grainT.setAttribute('seed', String(Math.floor(Math.random() * 1000))); }
+          wasCold = false;
+          heat = target;
+        }
+        heat *= 0.94;
+        if (heat < 0.05) { heat = 0; wasCold = true; }
+        if (heat !== lastApplied) { /* only touch page-wide styles when something changed */
+          docEl.style.setProperty('--accent', mixHex('#6C5CE7', '#ff7a1a', heat));
+          docEl.style.setProperty('--accent-deep', mixHex('#41348f', '#b35110', heat));
+          docEl.style.setProperty('--heat', String(heat.toFixed(3)));
+          if (grainA) grainA.setAttribute('intercept', String((heat * 3.4 - 2.6).toFixed(3)));
+          lastApplied = heat;
+        }
       }
-      heat *= 0.94; /* decay back to purple */
-      if (heat < 0.05) { heat = 0; wasCold = true; }
-      docEl.style.setProperty('--accent', mixHex('#6C5CE7', '#ff7a1a', heat));
-      docEl.style.setProperty('--accent-deep', mixHex('#41348f', '#b35110', heat));
-      docEl.style.setProperty('--heat', String(heat.toFixed(3)));
-      if (grainA) grainA.setAttribute('intercept', String((heat * 3.4 - 2.6).toFixed(3)));
-    }, 33);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   }
 
   /* ---------- boot ---------- */
