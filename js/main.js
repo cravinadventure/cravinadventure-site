@@ -573,6 +573,15 @@
             }
           }
         }
+        if (g.vy > 0) { /* land on the boxes (purple footer, work cards), same as the shapes */
+          if (Date.now() - obsAt > 600) refreshObstacles();
+          for (var oi = 0; oi < obstacles.length; oi++) {
+            var o = obstacles[oi];
+            if (g.x > o.left && g.x < o.right && g.y + 7 > o.top && g.y + 7 < o.top + Math.max(14, g.vy + 2)) {
+              g.y = o.top - 7; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
+            }
+          }
+        }
         if (g.y > H - 8) { g.y = H - 8; g.vy = -g.vy * 0.55; g.vx *= 0.985; }
         var age = now - g.born;
         var alpha = age > GLYPH_LIFE - 1500 ? Math.max(0, (GLYPH_LIFE - age) / 1500) : 1;
