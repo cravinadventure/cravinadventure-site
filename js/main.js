@@ -121,7 +121,7 @@
     function ribbonTick() {
       if (!third) { ribbonMeasure(); return; }
       /* left-to-right: offset climbs from -third up to 0, then wraps */
-      var speed = 90; /* path units per second */
+      var speed = 230; /* path units per second */
       var off = -third + ((Date.now() / 1000 * speed) % third);
       tp.setAttribute('startOffset', String(off));
     }
