@@ -4,4 +4,4 @@ Cravin' Adventure Studios main site. Culnane-inspired motion language (load-reve
 
 Grounded in: Brand_Intelligence/Culnane_Creative teardown + Agency_Web_Design/Agency_Site_Fundamentals research (200-300 word copy budget, layer-cake headings, outcome-led cards).
 
-Private until launch. To publish: repo public, Pages main/root, live at https://cravinadventure.github.io/cravinadventure-site/
+Live at https://cravinadventure.github.io/cravinadventure-site/
