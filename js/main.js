@@ -490,12 +490,12 @@
         if (onscreen) {
           var cx = L.bx + L.x;
           var dx = cx - mouseX, dy = cy - mouseY;
-          if (dx > -80 && dx < 80 && dy > -80 && dy < 80) { /* the broom */
+          if (dx > -26 && dx < 26 && dy > -26 && dy < 26) { /* only the cursor tip itself pushes */
             var d = Math.sqrt(dx * dx + dy * dy) || 1;
-            if (d < 80) {
-              var f = 1 - d / 80;
-              L.vx += (dx / d) * f * 3 + mvx * 0.12 * f;
-              L.vy += (dy / d) * f * 3 + mvy * 0.12 * f;
+            if (d < 26) {
+              var f = 1 - d / 26;
+              L.vx += (dx / d) * f * 3.4 + mvx * 0.18 * f;
+              L.vy += (dy / d) * f * 3.4 + mvy * 0.18 * f;
             }
           }
           for (var bi = 0; bi < balls.length; bi++) { /* falling shapes knock letters */
