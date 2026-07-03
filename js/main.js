@@ -59,9 +59,10 @@
       var s = document.createElement('span');
       s.className = 'ch';
       s.style.setProperty('--i', i);
-      s.setAttribute('data-ch', ch);
+      var glyph = ch === ' ' ? '\u00A0' : ch; /* inline-block collapses plain spaces */
+      s.setAttribute('data-ch', glyph);
       s.setAttribute('aria-hidden', 'true');
-      s.textContent = ch === ' ' ? ' ' : ch;
+      s.textContent = glyph;
       link.appendChild(s);
     });
   });
