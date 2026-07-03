@@ -126,6 +126,32 @@
       tp.setAttribute('startOffset', String(off));
     }
     setInterval(ribbonTick, 33);
+
+    /* scroll-velocity heat: purple -> orange, grainy dissolve back */
+    var grainA = document.getElementById('grainA');
+    var grainT = document.getElementById('grainT');
+    var heat = 0, lastY = window.scrollY, lastT = Date.now(), wasCold = true;
+    window.addEventListener('scroll', function () {
+      var now = Date.now(), y = window.scrollY;
+      var dt = Math.max(now - lastT, 1);
+      var v = Math.abs(y - lastY) / dt * 1000; /* px per second */
+      lastY = y; lastT = now;
+      var target = Math.min(1, v / 1300);
+      if (target > heat) {
+        if (wasCold && grainT) { /* new gust: new random grain pattern */
+          grainT.setAttribute('seed', String(Math.floor(Math.random() * 1000)));
+          wasCold = false;
+        }
+        heat = target;
+      }
+    }, { passive: true });
+    setInterval(function () {
+      if (!grainA) return;
+      heat *= 0.94; /* decay back to purple */
+      if (heat < 0.05) { heat = 0; wasCold = true; }
+      /* alpha = noise*slope + intercept: heat 1 = solid orange, low heat = only noise peaks stay orange */
+      grainA.setAttribute('intercept', String((heat * 3.4 - 2.6).toFixed(3)));
+    }, 33);
   }
 
   /* ---------- boot ---------- */
