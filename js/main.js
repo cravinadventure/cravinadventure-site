@@ -360,16 +360,19 @@
       });
       obsAt = Date.now();
     }
+    var SHAPES = ['circle', 'circle', 'star', 'plus', 'square', 'triangle'];
     function spawnBall() {
-      if (balls.length >= 60) return;
+      if (balls.length >= 130) return;
       balls.push({ x: 30 + Math.random() * (window.innerWidth - 60), y: -12,
-        vx: (Math.random() - 0.5) * 4, vy: 0, r: 4 + Math.random() * 5, born: Date.now() });
+        vx: (Math.random() - 0.5) * 4, vy: 0, r: 4 + Math.random() * 6, born: Date.now(),
+        shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+        rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.22 });
     }
     function scheduleBall() {
       spawnTimer = setTimeout(function () {
         if (!adhdOn()) return;
         spawnBall(); scheduleBall();
-      }, 250 + Math.random() * 650);
+      }, 110 + Math.random() * 320);
     }
     var BALL_LIFE = 25000;
     function drawBalls() {
@@ -392,15 +395,38 @@
         }
         var age = now - b.born;
         var alpha = age > BALL_LIFE - 3000 ? Math.max(0, (BALL_LIFE - age) / 3000) : 1;
+        b.rot += b.vr; /* tumbling */
         tctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
-        tctx.beginPath(); tctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); tctx.fill();
+        if (b.shape === 'circle') {
+          tctx.beginPath(); tctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); tctx.fill();
+        } else {
+          tctx.save(); tctx.translate(b.x, b.y); tctx.rotate(b.rot);
+          var r = b.r;
+          tctx.beginPath();
+          if (b.shape === 'square') {
+            tctx.rect(-r * 0.9, -r * 0.9, r * 1.8, r * 1.8);
+          } else if (b.shape === 'triangle') {
+            for (var v = 0; v < 3; v++) { var a3 = -Math.PI / 2 + v * 2 * Math.PI / 3;
+              tctx[v ? 'lineTo' : 'moveTo'](Math.cos(a3) * r * 1.15, Math.sin(a3) * r * 1.15); }
+            tctx.closePath();
+          } else if (b.shape === 'plus') {
+            var t3 = r * 0.38;
+            tctx.rect(-r, -t3, r * 2, t3 * 2); tctx.rect(-t3, -r, t3 * 2, r * 2);
+          } else { /* star */
+            for (var s5 = 0; s5 < 10; s5++) { var rr = s5 % 2 ? r * 0.45 : r * 1.2;
+              var a5 = -Math.PI / 2 + s5 * Math.PI / 5;
+              tctx[s5 ? 'lineTo' : 'moveTo'](Math.cos(a5) * rr, Math.sin(a5) * rr); }
+            tctx.closePath();
+          }
+          tctx.fill(); tctx.restore();
+        }
       });
     }
     var adhdBtn = document.getElementById('adhdbtn');
     if (adhdBtn) adhdBtn.addEventListener('click', function () {
       var on = docEl.classList.toggle('adhd');
       adhdBtn.setAttribute('aria-pressed', String(on));
-      if (on) { refreshObstacles(); for (var i = 0; i < 6; i++) spawnBall(); scheduleBall(); }
+      if (on) { refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall(); }
       else { clearTimeout(spawnTimer); balls = []; cracks = []; }
     });
     /* ---- text ink map: the trail passes UNDER words (normal mode) ---- */
