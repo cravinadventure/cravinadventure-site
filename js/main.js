@@ -29,9 +29,18 @@
     if (kts.length === 3) {
       var CAP = 0.72; /* Archivo cap-height ratio */
       var caps = sizes.map(function (s) { return s * CAP; });
-      var topCap = hgt * 0.13;            /* top of CRAVIN' */
-      var bottomBase = hgt * 0.815;       /* baseline of STUDIOS */
-      var gap = (bottomBase - topCap - caps[0] - caps[1] - caps[2]) / 2;
+      var portrait = hgt > w * 1.05;
+      var gap, topCap;
+      if (portrait) {
+        /* compact block, upper-centered: no giant voids on tall screens */
+        gap = caps[1] * 0.55;
+        var block = caps[0] + caps[1] + caps[2] + gap * 2;
+        topCap = Math.max(hgt * 0.14, (hgt * 0.72 - block) / 2 + hgt * 0.10);
+      } else {
+        topCap = hgt * 0.13;
+        var bottomBase = hgt * 0.815;
+        gap = (bottomBase - topCap - caps[0] - caps[1] - caps[2]) / 2;
+      }
       var y1 = topCap + caps[0];
       var y2 = y1 + gap + caps[1];
       var y3 = y2 + gap + caps[2];
@@ -189,12 +198,12 @@
         wasCold = false;
         heat = target;
       }
-      heat *= 0.94;
-      if (heat < 0.05) { heat = 0; wasCold = true; }
+      heat *= 0.965;
+      if (heat < 0.006) { heat = 0; wasCold = true; }
       docEl.style.setProperty('--accent', mixHex('#6C5CE7', '#ff7a1a', heat));
       docEl.style.setProperty('--accent-deep', mixHex('#41348f', '#b35110', heat));
       docEl.style.setProperty('--heat', String(heat.toFixed(3)));
-      if (grainA) grainA.setAttribute('intercept', String((heat * 3.4 - 2.6).toFixed(3)));
+      if (grainA) grainA.setAttribute('intercept', String((heat * 3.0 - 2.6).toFixed(3)));
     }, 33);
   }
 
