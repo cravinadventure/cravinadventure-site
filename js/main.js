@@ -152,19 +152,28 @@
   /* ---------- curved ribbon marquee: text rides the path ---------- */
   var tp = document.getElementById('ribbonTP');
   if (tp && !reduceMotion) {
-    var third = 0;
-    function ribbonMeasure() {
-      try { var t = tp.getComputedTextLength(); if (t) third = t / 3; } catch (e) {}
+    /* SMIL drives the belt: native SVG loop, no per-frame JS, no WebKit repaint flicker */
+    var ribbonArmedFor = 0;
+    function armRibbon() {
+      var t = 0;
+      try { t = tp.getComputedTextLength(); } catch (e) {}
+      if (!t || Math.abs(t - ribbonArmedFor) < 1) return;
+      ribbonArmedFor = t;
+      var third = t / 3, speed = 230;
+      var old = document.getElementById('ribbonAnim');
+      if (old) old.remove();
+      var a = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+      a.setAttribute('id', 'ribbonAnim');
+      a.setAttribute('attributeName', 'startOffset');
+      a.setAttribute('from', String(-third));
+      a.setAttribute('to', '0');
+      a.setAttribute('dur', (third / speed).toFixed(4) + 's');
+      a.setAttribute('repeatCount', 'indefinite');
+      tp.appendChild(a);
     }
-    ribbonMeasure();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ribbonMeasure);
-    function ribbonTick() {
-      if (!third) { ribbonMeasure(); return; }
-      /* left-to-right: offset climbs from -third up to 0, then wraps */
-      var speed = 230; /* path units per second */
-      var off = -third + ((Date.now() / 1000 * speed) % third);
-      tp.setAttribute('startOffset', String(off));
-    }
+    armRibbon();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(armRibbon);
+    setTimeout(armRibbon, 2500); /* late font swap safety */
     /* scroll-velocity heat: purple -> orange, grainy dissolve back */
     var grainA = document.getElementById('grainA');
     var grainT = document.getElementById('grainT');
@@ -191,15 +200,6 @@
       return 'rgb(' + m[0] + ',' + m[1] + ',' + m[2] + ')';
     }
     var rainbowHue = 0;
-    var lastFrameAt = 0;
-    function frame() {
-      lastFrameAt = Date.now();
-      ribbonTick(); /* text motion only: frame-synced, no jitter */
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-    setInterval(function () { if (Date.now() - lastFrameAt > 500) ribbonTick(); }, 400);
-
     /* heat: its own steady clock so color reacts DURING the scroll */
     setInterval(function () {
       var now = Date.now(), y = window.scrollY;
