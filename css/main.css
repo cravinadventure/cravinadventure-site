@@ -109,7 +109,7 @@ main section, footer{padding:110px 34px}
 /* ---------- credibility ---------- */
 .cred{text-align:center;background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .cred .shead{margin-bottom:16px}
-.cred p{color:var(--muted);font-size:16px;max-width:560px;margin:0 auto}
+.cred p{color:#c9c9cf;font-size:16.5px;line-height:1.75;max-width:680px;margin:0 auto}
 .cred .names{margin-top:26px;font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:13px;letter-spacing:2.5px;color:var(--paper);opacity:.85;max-width:none}
 
 /* ---------- footer ---------- */
