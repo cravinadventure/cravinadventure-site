@@ -241,7 +241,18 @@
       var h = pts[0];
       if (h && Math.abs(h.x - e.clientX) < 1 && Math.abs(h.y - e.clientY) < 1) return;
       if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(e.clientX - h.x, e.clientY - h.y));
-      pts.unshift({ x: e.clientX, y: e.clientY });
+      /* which text block is the cursor inside? entering one flips its layer: under, over, under... */
+      var blk = null;
+      if (!docEl.classList.contains('adhd')) {
+        if (Date.now() - inkAt > 250) refreshInk();
+        for (var q = 0; q < inkRects.length; q++) {
+          var eq = inkRects[q];
+          if (e.clientX >= eq.r.left && e.clientX <= eq.r.right && e.clientY >= eq.r.top && e.clientY <= eq.r.bottom) { blk = eq.el; break; }
+        }
+        if (blk && blk !== lastTextEl) blk.__inkUnder = !blk.__inkUnder; /* first pass goes under */
+        lastTextEl = blk;
+      }
+      pts.unshift({ x: e.clientX, y: e.clientY, u: blk ? !!blk.__inkUnder : false });
       if (pts.length > 12000) pts.length = 12000;
     }, { passive: true });
 
@@ -249,12 +260,19 @@
       return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
     }
     var ORANGE = [255, 122, 26], PURPLE = [108, 92, 231];
+    function strokeSegs(list) {
+      for (var i = 0; i < list.length; i++) {
+        var s = list[i];
+        tctx.strokeStyle = s.style; tctx.lineWidth = s.w;
+        tctx.beginPath(); tctx.moveTo(s.ax, s.ay); tctx.lineTo(s.bx, s.by); tctx.stroke();
+      }
+    }
     function drawTrail() {
       if (pts.length < 2) { allowed = 0; return; }
       /* no idle decay in either mode: the trail window (800px / 16000px) holds until the mouse moves again */
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
-      var run = 0;
+      var unders = [], overs = [], run = 0;
       for (var i = 0; i < pts.length - 1; i++) {
         var a = pts[i], b = pts[i + 1];
         var dx = b.x - a.x, dy = b.y - a.y;
@@ -269,12 +287,15 @@
         var t = Math.min(1, (run + seg / 2) / allowed); /* 0 head -> 1 tail */
         var col = mixT(ORANGE, PURPLE, Math.min(1, t / 0.55));
         var alpha = t < 0.65 ? 1 : Math.max(0, (1 - t) / 0.35); /* purple sinks to black */
-        tctx.strokeStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha.toFixed(3) + ')';
-        tctx.lineWidth = 3 - 2 * t;
-        tctx.beginPath(); tctx.moveTo(a.x, a.y); tctx.lineTo(end.x, end.y); tctx.stroke();
+        (a.u ? unders : overs).push({ ax: a.x, ay: a.y, bx: end.x, by: end.y, w: 3 - 2 * t,
+          style: 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha.toFixed(3) + ')' });
         run += seg;
         if (cut) { pts.length = i + 2; pts[i + 1] = end; break; }
       }
+      if (docEl.classList.contains('adhd')) { strokeSegs(unders); strokeSegs(overs); return; }
+      strokeSegs(unders);      /* these hide beneath the words... */
+      maskTrailUnderText();    /* ...the words punch through them... */
+      strokeSegs(overs);       /* ...and these lie on top */
     }
     /* ---- click fracture: spider-web crack from the click point, 5s fade ---- */
     var cracks = [], CRACK_MS = 5000;
@@ -538,20 +559,11 @@
     function maskTrailUnderText() {
       if (Date.now() - inkAt > 250) refreshInk();
       if (!inkScrollBound) { inkScrollBound = true; window.addEventListener('scroll', function () { inkAt = 0; }, { passive: true }); }
-      /* each time the cursor enters a text block, that block flips: under, over, under... */
-      var over = null;
-      for (var i = 0; i < inkRects.length; i++) {
-        var e = inkRects[i];
-        if (mouseX >= e.r.left && mouseX <= e.r.right && mouseY >= e.r.top && mouseY <= e.r.bottom) { over = e.el; break; }
-      }
-      if (over && over !== lastTextEl) over.__inkUnder = !over.__inkUnder; /* first pass: under */
-      lastTextEl = over;
       tctx.globalCompositeOperation = 'destination-out';
       tctx.fillStyle = '#000';
-      for (var i2 = 0; i2 < inkRects.length; i2++) {
-        var e2 = inkRects[i2];
-        if (!e2.el.__inkUnder) continue;
-        tctx.fillRect(e2.r.left, e2.r.top, e2.r.width, e2.r.height);
+      for (var i = 0; i < inkRects.length; i++) {
+        var e = inkRects[i];
+        tctx.fillRect(e.r.left, e.r.top, e.r.width, e.r.height);
       }
       tctx.globalCompositeOperation = 'source-over';
     }
@@ -559,9 +571,8 @@
       tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
       tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
-      drawTrail();
-      if (!adhdOn()) maskTrailUnderText(); /* words stay on top of the line */
-      else updateLetters(); /* the cursor is a broom; shapes knock letters too */
+      drawTrail(); /* handles its own under/over layering around text */
+      if (adhdOn()) updateLetters(); /* the cursor is a broom; shapes knock letters too */
       mvx *= 0.7; mvy *= 0.7;
       drawCracks();
       drawBalls();
