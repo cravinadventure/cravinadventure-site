@@ -16,14 +16,19 @@ a{color:inherit;text-decoration:none}
 #exit-veil.on{opacity:1}
 
 /* ---------- nav ---------- */
-#nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 34px;background:linear-gradient(180deg,rgba(10,10,10,.85),rgba(10,10,10,0));opacity:0}
+#nav{position:fixed;top:0;left:0;right:0;z-index:100;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 34px;background:linear-gradient(180deg,rgba(10,10,10,.85),rgba(10,10,10,0));opacity:0}
+.nav-left{justify-self:start}
+.nav-right{justify-self:end}
+.ca-mark{display:block;line-height:0}
+.ca-mark img{display:block;width:46px;height:46px;transition:transform .3s ease}
+.ca-mark:hover img{transform:rotate(12deg) scale(1.08)}
 .loaded #nav{animation:fadein .5s ease-out forwards}
 .no-js #nav, .motion-off #nav{opacity:1;animation:none}
 @keyframes fadein{to{opacity:1}}
 @keyframes riseup{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 .mono-spin{display:block;animation:spin 20s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.navlinks{display:flex;gap:34px}
+.navlinks{display:flex;gap:28px;align-items:center}
 #nav a{font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
 .ig{color:var(--accent)}
 
