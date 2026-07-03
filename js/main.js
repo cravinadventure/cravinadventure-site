@@ -247,9 +247,10 @@
     var pts = [];          /* head first */
     var allowed = 0; /* current permitted trail length: earned by movement, spent by retraction */
     var mouseX = -9999, mouseY = -9999, mvx = 0, mvy = 0;
-    function onMove(px, py) {
+    function onMove(px, py, noTrail) {
       if (mouseX > -9999) { mvx = px - mouseX; mvy = py - mouseY; }
       mouseX = px; mouseY = py;
+      if (noTrail) return; /* touch moves the physics cursor but never draws the line */
       var h = pts[0];
       if (h && Math.abs(h.x - px) < 1 && Math.abs(h.y - py) < 1) return;
       if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(px - h.x, py - h.y));
@@ -268,7 +269,7 @@
       if (pts.length > 12000) pts.length = 12000;
     }
     window.addEventListener('mousemove', function (e) { onMove(e.clientX, e.clientY); }, { passive: true });
-    window.addEventListener('touchmove', function (e) { var t = e.touches[0]; if (t) onMove(t.clientX, t.clientY); }, { passive: true });
+    window.addEventListener('touchmove', function (e) { var t = e.touches[0]; if (t) onMove(t.clientX, t.clientY, true); }, { passive: true });
 
     function mixT(a, b, t) {
       return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
