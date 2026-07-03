@@ -137,7 +137,6 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
   .ig-icon{display:block}
   .ca-mark img{width:40px;height:40px}
   main section, footer{padding:70px 24px}
-  .svc b{white-space:normal}
   .svc-group{padding:44px 24px}
   .stat{min-width:0;max-width:100%}
   body{overflow-x:hidden}
@@ -193,7 +192,7 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
   .svc-group h2::before{content:">> ";color:var(--accent)}
   .svc-list{border-top:1px solid var(--line)}
   .svc{display:flex;justify-content:space-between;align-items:baseline;gap:24px;padding:16px 0;border-bottom:1px solid var(--line)}
-  .svc b{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(15px,1.7vw,20px);text-transform:uppercase;letter-spacing:-.2px;white-space:nowrap;
+  .svc b{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(15px,1.7vw,20px);text-transform:uppercase;letter-spacing:-.2px;flex-shrink:0;max-width:100%;
     --svcfade:0;transition:--svcfade 2s ease-out;
     color:var(--paper);
     color:color-mix(in srgb, var(--accent) calc(var(--svcfade)*100%), var(--paper))}

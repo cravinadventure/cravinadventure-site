@@ -223,17 +223,18 @@
     sizeTrail();
     window.addEventListener('resize', sizeTrail);
 
-    var TRAIL_MAX = 100;   /* px of line on screen */
-    var RETRACT = 3.5;     /* px eaten from the tail every frame: the self-erase */
+    var TRAIL_MAX = 800;   /* px of line on screen */
+    var RETRACT = 8;       /* px eaten from the tail every frame: the self-erase */
     var pts = [];          /* head first */
+    var allowed = 0; /* current permitted trail length: earned by movement, spent by retraction */
     window.addEventListener('mousemove', function (e) {
       var h = pts[0];
       if (h && Math.abs(h.x - e.clientX) < 1 && Math.abs(h.y - e.clientY) < 1) return;
+      if (h) allowed = Math.min(TRAIL_MAX, allowed + Math.hypot(e.clientX - h.x, e.clientY - h.y));
       pts.unshift({ x: e.clientX, y: e.clientY });
-      if (pts.length > 300) pts.length = 300;
+      if (pts.length > 1600) pts.length = 1600;
     }, { passive: true });
 
-    var allowed = 0; /* current permitted trail length */
     function mixT(a, b, t) {
       return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
     }
@@ -242,8 +243,7 @@
       tctx.setTransform(tdpr, 0, 0, tdpr, 0, 0);
       tctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       if (pts.length < 2) { allowed = 0; return; }
-      /* grow toward the cap while moving, always retract: net effect erases when idle */
-      allowed = Math.min(allowed + 24, TRAIL_MAX) - RETRACT;
+      allowed -= RETRACT; /* the self-erase: idle trail retracts into the cursor */
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       var run = 0;
