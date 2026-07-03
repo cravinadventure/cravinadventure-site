@@ -107,37 +107,31 @@
     });
   });
 
-  /* ---------- hero footage rotation: many projects, one window ---------- */
-  var heroSources = [
-    'assets/hero_loop.mp4',
-    'https://cravinadventure.github.io/lxnd-asap-case-study/assets/final_loop_25s.mp4',
-    'https://cravinadventure.github.io/client-case-study-hggh/assets/cherries_splash_01.mp4',
-    'https://cravinadventure.github.io/client-case-study-luca-immersive/assets/luca_light_suit_promo.mp4',
-    'https://cravinadventure.github.io/client-case-study-hggh/assets/disco_boots_01.mp4',
-    'https://cravinadventure.github.io/client-case-study-hggh/assets/glitter_finger.mp4'
-  ];
-  var heroIdx = 0;
-  function rotateHero() {
-    if (reduceMotion) return;
-    var v = document.getElementById('herovid');
-    if (!v) return;
-    heroIdx = (heroIdx + 1) % heroSources.length;
-    v.classList.add('swap');
-    setTimeout(function () {
-      v.src = heroSources[heroIdx];
-      var p = v.play(); if (p && p.catch) p.catch(function () {});
-      v.classList.remove('swap');
-    }, 500);
+  /* ---------- hero flipbook: stills from the animation library ---------- */
+  var FLIP_COUNT = 21;
+  var flipEl = document.getElementById('heroflip');
+  var flipIdx = 1;
+  var flipCache = [];
+  function flipSrc(n) { return 'assets/flip/flip_' + (n < 10 ? '0' + n : n) + '.jpg'; }
+  function preloadFlip(n) {
+    if (flipCache[n]) return;
+    var im = new Image(); im.src = flipSrc(n); flipCache[n] = im;
   }
-  if (document.getElementById('herovid')) setInterval(rotateHero, 8000);
+  if (flipEl && !reduceMotion) {
+    preloadFlip(2); preloadFlip(3);
+    setInterval(function () {
+      flipIdx = flipIdx % FLIP_COUNT + 1;
+      flipEl.src = flipSrc(flipIdx);
+      preloadFlip(flipIdx % FLIP_COUNT + 1);
+      preloadFlip((flipIdx + 1) % FLIP_COUNT + 1);
+    }, 1400);
+  }
 
   /* ---------- boot ---------- */
   function boot() {
     fitKnockout();
     window.addEventListener('resize', fitKnockout);
     document.body.classList.add('loaded');
-    var hv = document.getElementById('herovid');
-    if (hv && !reduceMotion) { var hp = hv.play(); if (hp && hp.catch) hp.catch(function () {}); }
   }
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(boot);
