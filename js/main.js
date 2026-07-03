@@ -314,7 +314,9 @@
       return { segs: segs, born: Date.now() };
     }
     window.addEventListener('mousedown', function (e) {
-      if (e.button !== 0 || !adhdOn()) return; /* fractures are an ADHD-mode thing */
+      if (e.button !== 0) return;
+      var onButton = adhdBtn && adhdBtn.contains(e.target);
+      if (!adhdOn() && !onButton) return; /* normal mode: only the ADHD button itself shatters */
       cracks.push(makeCrack(e.clientX, e.clientY));
       if (cracks.length > 12) cracks.shift();
     });
