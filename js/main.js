@@ -497,8 +497,9 @@
             var d = Math.sqrt(dx * dx + dy * dy) || 1;
             if (d < 26) {
               var f = 1 - d / 26;
-              L.vx += (dx / d) * f * 3.4 + mvx * 0.18 * f;
-              L.vy += (dy / d) * f * 3.4 + mvy * 0.18 * f;
+              /* momentum-led: letters fly the way the mouse is moving (any direction), radial shove secondary */
+              L.vx += mvx * 0.55 * f + (dx / d) * f * 1.3;
+              L.vy += mvy * 0.55 * f + (dy / d) * f * 1.3;
             }
           }
           /* letters are solid ground for the falling shapes: publish live position */
