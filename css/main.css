@@ -34,7 +34,7 @@ a{color:inherit;text-decoration:none}
 
 /* ---------- letter-roll ---------- */
 .lr{display:inline-block;overflow:hidden;vertical-align:bottom}
-.lr .ch{display:inline-block;position:relative;transition:transform .25s var(--ease-roll);transition-delay:calc(var(--i)*25ms)}
+.lr .ch{display:inline-block;position:relative;transition:transform .3s var(--ease-roll);transition-delay:calc(var(--i)*55ms)}
 .lr .ch::after{content:attr(data-ch);position:absolute;left:0;top:100%;color:var(--accent)}
 @media(hover:hover){
   .lr:hover .ch, .lr:focus-visible .ch{transform:translateY(-100%)}
