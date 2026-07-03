@@ -1,6 +1,6 @@
 # cravinadventure-site
 
-Cravin' Adventure Studios main site. Culnane-inspired motion language (load-reveal, text-knockout hero over footage, scroll roll-ups, letter-roll hovers, countup stats, marquees, spinning monogram) in the studio palette (electric #6C5CE7 on near-black). Zero dependencies, all motion hand-rolled (CSS keyframes + a small vanilla JS file); no build step; respects prefers-reduced-motion. Scroll-velocity heat glides every accent from purple to orange page-wide.
+Cravin' Adventure Studios main site. Culnane-inspired motion language (load-reveal, text-knockout hero over footage, scroll roll-ups, letter-roll hovers, countup stats, marquees, spinning monogram) in the studio palette (electric #6C5CE7 on near-black). Zero dependencies, all motion hand-rolled (CSS keyframes, SMIL, one vanilla JS file); no build step; respects prefers-reduced-motion. Scroll-velocity heat glides every accent from purple to orange page-wide. The persistent cursor trail weaves under and over the words, and the ADHD Mode toggle turns the page into a physics toy: rainbow accent loop, raining shapes, click fractures, and every letter a zero-G body the cursor can bat around, with the page reassembling itself on exit.
 
 Grounded in: Brand_Intelligence/Culnane_Creative teardown + Agency_Web_Design/Agency_Site_Fundamentals research (200-300 word copy budget, layer-cake headings, outcome-led cards).
 
