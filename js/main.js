@@ -152,8 +152,7 @@
     }
     var lastApplied = -1;
     var lastFrameAt = 0;
-    function frame() {
-      lastFrameAt = Date.now();
+    function tickWork() {
       /* ribbon text: frame-synced, time-based (no interval jitter) */
       ribbonTick();
       /* velocity by position polling */
@@ -178,11 +177,15 @@
           lastApplied = heat;
         }
       }
+    }
+    function frame() {
+      lastFrameAt = Date.now();
+      tickWork();
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
-    /* fallback: if rAF is throttled/suspended, keep coarse motion alive */
-    setInterval(function () { if (Date.now() - lastFrameAt > 500) frame(); }, 400);
+    /* fallback: if rAF is throttled/suspended, keep coarse motion alive (work only, no extra rAF chain) */
+    setInterval(function () { if (Date.now() - lastFrameAt > 500) tickWork(); }, 400);
   }
 
   /* ---------- boot ---------- */
