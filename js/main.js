@@ -257,7 +257,7 @@
     function onMove(px, py, noTrail) {
       if (mouseX > -9999) { mvx = px - mouseX; mvy = py - mouseY; }
       mouseX = px; mouseY = py;
-      if (noTrail) return; /* touch moves the physics cursor but never draws the line */
+      if (noTrail || window.innerWidth <= 820) return; /* no line at mobile widths, any device, any mode */
       var h = pts[0];
       if (h && Math.abs(h.x - px) < 1 && Math.abs(h.y - py) < 1) return;
       if (h) allowed = Math.min(TRAIL_MAX * (docEl.classList.contains('adhd') ? 20 : 1), allowed + Math.hypot(px - h.x, py - h.y));
@@ -290,6 +290,7 @@
       }
     }
     function drawTrail() {
+      if (window.innerWidth <= 820) { pts.length = 0; allowed = 0; return; } /* mobile layout: trail off, purge leftovers */
       if (pts.length < 2) { allowed = 0; return; }
       /* no idle decay in either mode: the trail window (800px / 16000px) holds until the mouse moves again */
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
