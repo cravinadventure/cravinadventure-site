@@ -107,6 +107,30 @@
     });
   });
 
+  /* ---------- hero footage rotation: many projects, one window ---------- */
+  var heroSources = [
+    'assets/hero_loop.mp4',
+    'https://cravinadventure.github.io/lxnd-asap-case-study/assets/final_loop_25s.mp4',
+    'https://cravinadventure.github.io/client-case-study-hggh/assets/cherries_splash_01.mp4',
+    'https://cravinadventure.github.io/client-case-study-luca-immersive/assets/luca_light_suit_promo.mp4',
+    'https://cravinadventure.github.io/client-case-study-hggh/assets/disco_boots_01.mp4',
+    'https://cravinadventure.github.io/client-case-study-hggh/assets/glitter_finger.mp4'
+  ];
+  var heroIdx = 0;
+  function rotateHero() {
+    if (reduceMotion) return;
+    var v = document.getElementById('herovid');
+    if (!v) return;
+    heroIdx = (heroIdx + 1) % heroSources.length;
+    v.classList.add('swap');
+    setTimeout(function () {
+      v.src = heroSources[heroIdx];
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+      v.classList.remove('swap');
+    }, 500);
+  }
+  if (document.getElementById('herovid')) setInterval(rotateHero, 8000);
+
   /* ---------- boot ---------- */
   function boot() {
     fitKnockout();
