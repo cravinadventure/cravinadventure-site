@@ -577,6 +577,7 @@
           if (!r.width) return;
           var st = getComputedStyle(sp);
           glyphs.push({ ch: sp.textContent, x: r.left + r.width / 2, y: r.top + r.height / 2,
+            hh: Math.max(6, parseFloat(st.fontSize) * 0.38), /* real glyph half-height: rest ON surfaces, not in them */
             vx: (Math.random() - 0.5) * 1.2, vy: 0.4 + Math.random() * 0.9,
             rot: 0, vr: 0.04 + Math.random() * 0.14, /* letters always roll clockwise */
             font: st.fontWeight + ' ' + st.fontSize + ' ' + st.fontFamily,
@@ -598,8 +599,8 @@
         if (g.vy > 0) { /* bounce off the text lines below on the way down */
           for (var i = 0; i < inkRects.length; i++) {
             var e = inkRects[i];
-            if (g.x > e.r.left && g.x < e.r.right && g.y + 7 > e.r.top && g.y + 7 < e.r.top + Math.max(14, g.vy + 2)) {
-              g.y = e.r.top - 7; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
+            if (g.x > e.r.left && g.x < e.r.right && g.y + g.hh > e.r.top && g.y + g.hh < e.r.top + Math.max(14, g.vy + 2)) {
+              g.y = e.r.top - g.hh; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
             }
           }
         }
@@ -607,12 +608,12 @@
           if (Date.now() - obsAt > 600) refreshObstacles();
           for (var oi = 0; oi < obstacles.length; oi++) {
             var o = obstacles[oi];
-            if (g.x > o.left && g.x < o.right && g.y + 7 > o.top && g.y + 7 < o.top + Math.max(14, g.vy + 2)) {
-              g.y = o.top - 7; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
+            if (g.x > o.left && g.x < o.right && g.y + g.hh > o.top && g.y + g.hh < o.top + Math.max(14, g.vy + 2)) {
+              g.y = o.top - g.hh; g.vy = -g.vy * 0.55; g.vx *= 0.985; break;
             }
           }
         }
-        if (g.y > H - 8) { g.y = H - 8; g.vy = -g.vy * 0.55; g.vx *= 0.985; }
+        if (g.y > H - g.hh) { g.y = H - g.hh; g.vy = -g.vy * 0.55; g.vx *= 0.985; }
         var age = now - g.born;
         var alpha = age > GLYPH_LIFE - 1500 ? Math.max(0, (GLYPH_LIFE - age) / 1500) : 1;
         tctx.save(); tctx.translate(g.x, g.y); tctx.rotate(g.rot);
