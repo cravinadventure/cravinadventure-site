@@ -41,7 +41,7 @@ a{color:inherit;text-decoration:none}
 
 /* ---------- hero ---------- */
 .hero{position:relative;height:100vh;min-height:560px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 52%,rgba(10,10,10,.65) 74%,rgba(10,10,10,.97) 100%);z-index:1;pointer-events:none}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(10,10,10,.7) 78%,rgba(10,10,10,.98) 100%);z-index:1;pointer-events:none}
 .hero video,#heroflip{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
 .loaded .hero video,.loaded #heroflip{animation:fadein .9s ease-out .3s forwards}
 .hero video.swap{transition:opacity .5s ease;opacity:0 !important}
@@ -49,13 +49,13 @@ a{color:inherit;text-decoration:none}
 .loaded .knockout{animation:fadein .7s ease-out .25s forwards}
 .motion-off .hero video,.motion-off #heroflip,.motion-off .knockout{opacity:1;animation:none}
 .kt{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;letter-spacing:.01em}
-.hero-copy{position:relative;z-index:2;padding:0 34px 72px;max-width:720px;opacity:0}
+.hero-copy{position:relative;z-index:2;padding:0 34px 34px;max-width:720px;opacity:0}
 .loaded .hero-copy{animation:riseup .6s cubic-bezier(.455,.03,.515,.955) .8s forwards}
 .motion-off .hero-copy{opacity:1;transform:none;animation:none}
 .hero-copy h2{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(22px,3.4vw,40px);line-height:1.06;letter-spacing:-.5px;text-transform:uppercase}
 .hero-copy h2::after{content:"";display:block;width:72px;height:4px;background:var(--accent);margin-top:14px}
 .hero-copy p{margin-top:14px;color:var(--muted);font-size:clamp(14px,1.6vw,17px);max-width:520px}
-.cue{position:absolute;right:34px;bottom:72px;z-index:2;font-size:11px;letter-spacing:4px;color:var(--muted);writing-mode:vertical-rl;opacity:0}
+.cue{position:absolute;right:34px;bottom:34px;z-index:2;font-size:11px;letter-spacing:4px;color:var(--muted);writing-mode:vertical-rl;opacity:0}
 .loaded .cue{animation:fadein .5s ease-out 1.2s forwards}
 .motion-off .cue{opacity:1;animation:none}
 
