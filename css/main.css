@@ -200,7 +200,7 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
     color:color-mix(in srgb, var(--accent) calc(var(--svcfade)*100%), var(--paper))}
   .svc:hover b{--svcfade:1;transition:--svcfade .12s ease-out}
   .svc span{font-size:13.5px;color:var(--muted);text-align:right}
-  .svc a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap;display:inline-block;margin-top:5px}
+  .svc a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap;display:block;text-align:right;margin-top:6px}
   @media(max-width:700px){.svc{flex-direction:column;gap:4px}.svc span{text-align:left}}
 
 /* ---------- ADHD hard mode ---------- */
