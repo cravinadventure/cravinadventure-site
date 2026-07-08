@@ -346,7 +346,10 @@
     function drawTrail() {
       if (window.innerWidth <= 820) { pts.length = 0; allowed = 0; return; } /* mobile layout: trail off, purge leftovers */
       if (pts.length < 2) { allowed = 0; return; }
-      /* no idle decay in either mode: the trail window (800px / 16000px) holds until the mouse moves again */
+      /* proportional decay: length settles at ~mouse-speed/k, and melts fast when the mouse stops */
+      var k = docEl.classList.contains('adhd') ? 0.02 : 0.085;
+      allowed *= Math.pow(1 - k, tickDt);
+      if (allowed < 6) { allowed = 0; pts.length = 1; return; }
       if (allowed <= 0) { allowed = 0; pts.length = 1; return; }
       tctx.lineCap = 'round'; tctx.lineJoin = 'round';
       var unders = [], overs = [], run = 0;

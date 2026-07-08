@@ -108,7 +108,7 @@ main section, footer{padding:110px 34px}
 .live::before{content:"";position:absolute;left:-3px;top:-2px;width:11px;height:11px;border-radius:50%;background:var(--accent);animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .alllink{text-align:center;margin-top:36px}
-.alllink a{color:var(--accent);font-weight:600;font-size:15px;letter-spacing:.5px}
+.alllink a{display:inline-block;border:1.5px solid var(--accent);border-radius:3px;padding:12px 24px;color:var(--accent);font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:15px;letter-spacing:1px;text-transform:uppercase;text-decoration:none}
 
 /* ---------- credibility ---------- */
 .cred{text-align:center;background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -198,7 +198,6 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
     --svcfade:0;transition:--svcfade 2s ease-out;
     color:var(--paper);
     color:color-mix(in srgb, var(--accent) calc(var(--svcfade)*100%), var(--paper))}
-  .svc:hover b{--svcfade:1;transition:--svcfade .12s ease-out}
   .svc > span{font-size:13.5px;color:var(--muted);text-align:right}
   .svc a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap;display:block;text-align:right;margin-top:6px}
   @media(max-width:700px){.svc{flex-direction:column;gap:4px}.svc > span{text-align:left}}
