@@ -649,7 +649,7 @@
       });
       link.addEventListener('mouseleave', function () { link.classList.remove('dropfx'); });
     });
-    var GLYPH_LIFE = 9000;
+    var GLYPH_LIFE = 3200;
     function drawGlyphs() {
       if (!glyphs.length) return;
       var now = Date.now(), W = window.innerWidth, H = window.innerHeight;
@@ -676,7 +676,7 @@
         }
         if (g.y > H - g.hh) { g.y = H - g.hh; g.vy = -g.vy * 0.55; g.vx *= 0.985; }
         var age = now - g.born;
-        var alpha = age > GLYPH_LIFE - 1500 ? Math.max(0, (GLYPH_LIFE - age) / 1500) : 1;
+        var alpha = age > GLYPH_LIFE - 2200 ? Math.max(0, (GLYPH_LIFE - age) / 2200) : 1;
         tctx.save(); tctx.translate(g.x, g.y); tctx.rotate(g.rot);
         tctx.font = g.font;
         if ('fontStretch' in tctx) tctx.fontStretch = g.stretch;
