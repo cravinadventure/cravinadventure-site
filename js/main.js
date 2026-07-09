@@ -687,12 +687,19 @@
       });
     }
     var adhdBtn = document.getElementById('adhdbtn');
-    if (adhdBtn) adhdBtn.addEventListener('click', function () {
-      var on = docEl.classList.toggle('adhd');
-      adhdBtn.setAttribute('aria-pressed', String(on));
-      if (on) { letterize(); refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall(); }
-      else { clearTimeout(spawnTimer); balls = []; cracks = []; pts.length = 0; allowed = 0; lettersHome(); }
-    });
+    var adhdAutoOff = null;
+    function setAdhd(on) {
+      docEl.classList.toggle('adhd', on);
+      if (adhdBtn) adhdBtn.setAttribute('aria-pressed', String(on));
+      clearTimeout(adhdAutoOff);
+      if (on) {
+        letterize(); refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall();
+        adhdAutoOff = setTimeout(function () { if (docEl.classList.contains('adhd')) setAdhd(false); }, 15000);
+      } else {
+        clearTimeout(spawnTimer); balls = []; cracks = []; pts.length = 0; allowed = 0; lettersHome();
+      }
+    }
+    if (adhdBtn) adhdBtn.addEventListener('click', function () { setAdhd(!docEl.classList.contains('adhd')); });
     /* ---- text ink map: the trail passes UNDER words (normal mode) ---- */
     var inkRects = [], inkAt = 0;
     function refreshInk() {
