@@ -156,7 +156,7 @@
   });
   /* ---------- scroll roll-ups + countups (IO toggles a class; CSS animates) ---------- */
   function countUp(el) {
-    var inStats = el.closest && el.closest('#stats');
+    var inStats = el.closest && el.closest('.stats-row');
     var from = parseInt(el.getAttribute('data-from') || '0', 10);
     var to = parseInt((el.getAttribute('data-to') || el.textContent).replace(/,/g, ''), 10);
     var dur = inStats ? 2600 : 1200, t0 = null; /* the studio-stats band counts slower */
