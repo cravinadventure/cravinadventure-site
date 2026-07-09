@@ -621,7 +621,7 @@
       letters.forEach(function (L) {
         L.vx = L.vy = 0;
         if (L.x || L.y) {
-          L.el.style.transition = 'transform 3.2s cubic-bezier(.22,1,.36,1)';
+          L.el.style.transition = 'transform 3.2s cubic-bezier(.7,0,.3,1)';
           L.el.style.transform = '';
           L.x = L.y = 0;
         }
