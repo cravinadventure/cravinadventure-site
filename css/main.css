@@ -110,7 +110,7 @@ main section, footer{padding:110px 34px}
 .stats-row .stat{text-align:center;white-space:normal}
 .stats-row .stat b{transition:color .55s ease;font-size:clamp(22px,3.4vw,40px)}
 .cred .stats-row{margin-top:52px}
-.stats-row .stat b.maxed,.stats-row.maxed .stat b{color:#ff7a1a}
+.stats-row .stat b.maxed,.stats-row.maxed .stat b{color:var(--paper)}
 .live{position:relative;padding-left:15px}
 .live::before{content:"";position:absolute;left:-3px;top:-2px;width:11px;height:11px;border-radius:50%;background:var(--accent);animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
@@ -126,11 +126,8 @@ main section, footer{padding:110px 34px}
 /* ---------- footer ---------- */
 footer{text-align:center;padding-bottom:70px}
 .biglink{display:inline-block;font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(20px,4.2vw,52px);text-transform:lowercase;letter-spacing:-1px;border-bottom:4px solid var(--accent);padding-bottom:6px}
-.contact-btn{position:relative;display:inline-block;margin-top:4px;padding:22px 64px;border:2px solid var(--accent);border-radius:60px;color:var(--paper);font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(20px,3.2vw,40px);text-transform:uppercase;letter-spacing:1px;overflow:hidden;transition:transform .25s ease-out,color .35s ease;will-change:transform}
-.contact-btn span{position:relative;z-index:1}
-.contact-btn::before{content:"";position:absolute;left:50%;top:100%;width:150%;aspect-ratio:1;background:var(--accent);border-radius:50%;transform:translate(-50%,0);transition:top .5s cubic-bezier(.45,0,.2,1);z-index:0}
-.contact-btn:hover{color:var(--ink)}
-.contact-btn:hover::before{top:-25%}
+.contact-btn{position:relative;display:inline-block;margin-top:4px;padding:16px 46px;border:2px solid var(--accent);border-radius:50px;background:transparent;color:var(--paper);font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(15px,1.8vw,22px);text-transform:uppercase;letter-spacing:1px;transition:transform .25s ease-out,background-color .3s ease,color .3s ease;will-change:transform}
+.contact-btn:hover{background:var(--accent);color:var(--ink)}
 .motion-off .contact-btn{transition:none}
 footer .sub{margin-top:26px}
 footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
