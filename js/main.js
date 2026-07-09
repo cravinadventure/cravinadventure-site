@@ -156,20 +156,23 @@
   });
   /* ---------- scroll roll-ups + countups (IO toggles a class; CSS animates) ---------- */
   function countUp(el) {
+    var inStats = el.closest && el.closest('#stats');
     var from = parseInt(el.getAttribute('data-from') || '0', 10);
-    var to = parseInt(el.getAttribute('data-to') || el.textContent, 10);
-    var dur = 1200, t0 = null;
-    el.textContent = String(from);
+    var to = parseInt((el.getAttribute('data-to') || el.textContent).replace(/,/g, ''), 10);
+    var dur = inStats ? 2600 : 1200, t0 = null; /* the studio-stats band counts slower */
+    function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+    el.textContent = fmt(from);
+    function done() { el.textContent = fmt(to); if (inStats) { var r = el.closest('.stats-row'); if (r) r.classList.add('maxed'); } } /* whole row flips to orange at max */
     function tick(ts) {
       if (!t0) t0 = ts;
       var k = Math.min((ts - t0) / dur, 1);
       k = 1 - Math.pow(1 - k, 3); /* ease-out cubic */
-      el.textContent = String(Math.round(from + (to - from) * k));
-      if (k < 1) requestAnimationFrame(tick); else el.textContent = String(to);
+      el.textContent = fmt(from + (to - from) * k);
+      if (k < 1) requestAnimationFrame(tick); else done();
     }
     requestAnimationFrame(tick);
     /* wall-clock safety: guarantee the final value even if rAF is throttled */
-    setTimeout(function () { el.textContent = String(to); }, dur + 200);
+    setTimeout(done, dur + 200);
   }
 
   if ('IntersectionObserver' in window && !reduceMotion) {

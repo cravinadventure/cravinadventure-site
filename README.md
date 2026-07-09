@@ -5,3 +5,7 @@ Cravin' Adventure Studios main site. Culnane-inspired motion language (load-reve
 Grounded in: Brand_Intelligence/Culnane_Creative teardown + Agency_Web_Design/Agency_Site_Fundamentals research (200-300 word copy budget, layer-cake headings, outcome-led cards).
 
 Live at https://cravinadventure.github.io/cravinadventure-site/
+
+## Studio stats band
+
+A stats band (5,000,000+ views / 300+ projects / WORLDWIDE) sits under the Work section. Numbers count up on scroll (slower, comma-formatted) and flip to the studio orange (#ff7a1a) at max. Same band appears on the generated audience pages.
