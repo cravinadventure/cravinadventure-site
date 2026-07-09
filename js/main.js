@@ -461,7 +461,7 @@
       });
     }
     /* ---- hard mode: white balls with gravity, bouncing off words and boxes ---- */
-    var balls = [], spawnTimer = null, obstacles = [], obsAt = 0;
+    var balls = [], spawnTimer = null, obstacles = [], obsAt = 0, ballsFadeAt = 0;
     function adhdOn() { return docEl.classList.contains('adhd'); }
     function refreshObstacles() {
       obstacles = [];
@@ -493,6 +493,7 @@
       if (!balls.length) return;
       var now = Date.now(), W = window.innerWidth, H = window.innerHeight;
       if (now - obsAt > 600) refreshObstacles();
+      if (ballsFadeAt && now - ballsFadeAt > 950) { balls = []; ballsFadeAt = 0; return; }
       balls = balls.filter(function (b) { return now - b.born < BALL_LIFE && b.x < W + 60; });
       balls.forEach(function (b) {
         b.vy += 0.45 * tickDt; b.vx += 0.018 * tickDt; /* gravity tips down and a touch right */
@@ -520,6 +521,7 @@
         }
         var age = now - b.born;
         var alpha = age > BALL_LIFE - 3000 ? Math.max(0, (BALL_LIFE - age) / 3000) : 1;
+        if (ballsFadeAt) alpha *= Math.max(0, 1 - (now - ballsFadeAt) / 900); /* graceful wind-down when mode ends */
         b.rot += b.vr * tickDt; /* tumbling */
         tctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
         if (b.shape === 'circle') {
@@ -622,11 +624,12 @@
         L.vx = L.vy = 0;
         if (L.x || L.y) {
           L.el.style.transition = 'transform 3.2s cubic-bezier(1,0,.4,1)';
+          L.el.style.transitionDelay = (Math.random() * 1.4).toFixed(2) + 's'; /* trickle back, not all at once */
           L.el.style.transform = '';
           L.x = L.y = 0;
         }
       });
-      setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; if (L.moving) { L.moving = false; L.el.classList.remove('moving'); } }); }, 3300);
+      setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; L.el.style.transitionDelay = ''; if (L.moving) { L.moving = false; L.el.classList.remove('moving'); } }); }, 4900);
     }
     /* ---- hover letter-drop: the word's letters fall with shape physics, purple drops in ---- */
     var glyphs = [];
@@ -693,10 +696,10 @@
       if (adhdBtn) adhdBtn.setAttribute('aria-pressed', String(on));
       clearTimeout(adhdAutoOff);
       if (on) {
-        letterize(); refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall();
+        ballsFadeAt = 0; letterize(); refreshObstacles(); for (var i = 0; i < 14; i++) spawnBall(); scheduleBall();
         adhdAutoOff = setTimeout(function () { if (docEl.classList.contains('adhd')) setAdhd(false); }, 15000);
       } else {
-        clearTimeout(spawnTimer); balls = []; cracks = []; pts.length = 0; allowed = 0; lettersHome();
+        clearTimeout(spawnTimer); ballsFadeAt = Date.now(); pts.length = 0; allowed = 0; lettersHome();
       }
     }
     if (adhdBtn) adhdBtn.addEventListener('click', function () { setAdhd(!docEl.classList.contains('adhd')); });
