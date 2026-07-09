@@ -621,12 +621,12 @@
       letters.forEach(function (L) {
         L.vx = L.vy = 0;
         if (L.x || L.y) {
-          L.el.style.transition = 'transform 1.6s cubic-bezier(.22,1,.36,1)';
+          L.el.style.transition = 'transform 2.3s cubic-bezier(.22,1,.36,1)';
           L.el.style.transform = '';
           L.x = L.y = 0;
         }
       });
-      setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; if (L.moving) { L.moving = false; L.el.classList.remove('moving'); } }); }, 1700);
+      setTimeout(function () { letters.forEach(function (L) { L.el.style.transition = ''; if (L.moving) { L.moving = false; L.el.classList.remove('moving'); } }); }, 2400);
     }
     /* ---- hover letter-drop: the word's letters fall with shape physics, purple drops in ---- */
     var glyphs = [];
