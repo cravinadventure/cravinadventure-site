@@ -21,6 +21,8 @@ a{color:inherit;text-decoration:none}
 .ca-mark img{display:block;width:48px;height:48px;transition:transform .3s ease}
 .ca-mark:hover img{transform:rotate(12deg) scale(1.08)}
 .ig-corner{position:absolute;top:28px;right:34px}
+.ig-wrap{display:inline-flex;align-items:center;gap:5px}
+.verified{flex:0 0 auto;position:relative;top:.5px}
 .ig-icon{display:none;position:absolute;top:20px;right:18px;line-height:0}
 .loaded #nav{animation:fadein .5s ease-out forwards}
 .no-js #nav, .motion-off #nav{opacity:1;animation:none}
