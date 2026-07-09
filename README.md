@@ -9,3 +9,7 @@ Live at https://cravinadventure.github.io/cravinadventure-site/
 ## Studio stats band
 
 A stats band (5,000,000+ views / 300+ projects / WORLDWIDE) sits under the Work section. Numbers count up on scroll (slower, comma-formatted) and flip to the studio orange (#ff7a1a) at max. Same band appears on the generated audience pages.
+
+## Contact button
+
+Contact CTA is a purple-outlined "CONTACT US" pill: liquid purple fill on hover, magnetically eases toward the cursor. Footer marquee slowed to 34s.

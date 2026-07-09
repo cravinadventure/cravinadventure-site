@@ -189,6 +189,17 @@
     document.querySelectorAll('[data-reveal]').forEach(function (el) { el.classList.add('in'); });
   }
 
+  /* ---------- magnetic contact button: eases toward the cursor ---------- */
+  if (!reduceMotion) {
+    document.querySelectorAll('.contact-btn').forEach(function (btn) {
+      btn.addEventListener('mousemove', function (e) {
+        var r = btn.getBoundingClientRect();
+        btn.style.transform = 'translate(' + ((e.clientX - (r.left + r.width / 2)) * 0.35) + 'px,' + ((e.clientY - (r.top + r.height / 2)) * 0.45) + 'px)';
+      });
+      btn.addEventListener('mouseleave', function () { btn.style.transform = 'translate(0,0)'; });
+    });
+  }
+
   /* ---------- exit transition on outbound links ---------- */
   var veil = document.getElementById('exit-veil');
   document.querySelectorAll('a[target="_blank"]').forEach(function (a) {

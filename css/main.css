@@ -125,6 +125,12 @@ main section, footer{padding:110px 34px}
 /* ---------- footer ---------- */
 footer{text-align:center;padding-bottom:70px}
 .biglink{display:inline-block;font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(20px,4.2vw,52px);text-transform:lowercase;letter-spacing:-1px;border-bottom:4px solid var(--accent);padding-bottom:6px}
+.contact-btn{position:relative;display:inline-block;margin-top:4px;padding:22px 64px;border:2px solid var(--accent);border-radius:60px;color:var(--paper);font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(20px,3.2vw,40px);text-transform:uppercase;letter-spacing:1px;overflow:hidden;transition:transform .25s ease-out,color .35s ease;will-change:transform}
+.contact-btn span{position:relative;z-index:1}
+.contact-btn::before{content:"";position:absolute;left:50%;top:100%;width:150%;aspect-ratio:1;background:var(--accent);border-radius:50%;transform:translate(-50%,0);transition:top .5s cubic-bezier(.45,0,.2,1);z-index:0}
+.contact-btn:hover{color:var(--ink)}
+.contact-btn:hover::before{top:-25%}
+.motion-off .contact-btn{transition:none}
 footer .sub{margin-top:26px}
 footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .fine{margin-top:56px;font-size:11.5px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
@@ -188,7 +194,7 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .pfoot .pmq::before,.pfoot .pmq::after{content:"";position:absolute;top:0;bottom:0;width:14%;z-index:2;pointer-events:none}
 .pfoot .pmq::before{left:0;background:linear-gradient(90deg,var(--accent),transparent)}
 .pfoot .pmq::after{right:0;background:linear-gradient(270deg,var(--accent),transparent)}
-.pfoot .pmq .mq-track{animation:mq 17s linear infinite;animation-direction:normal}
+.pfoot .pmq .mq-track{animation:mq 34s linear infinite;animation-direction:normal}
 .pfoot .pmq span{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(64px,10vw,150px);letter-spacing:-2px;color:#0a0a0a;text-transform:uppercase;line-height:1}
 .pfoot .pcopy{text-align:center;font-size:12.5px;font-weight:600;letter-spacing:1.5px;color:#0a0a0a;padding-top:10px}
 .pfoot .pcopy a{color:#0a0a0a;font-weight:700;text-decoration:underline;text-underline-offset:3px}
