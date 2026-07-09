@@ -224,13 +224,3 @@ footer .sub a{color:var(--accent);font-weight:600;letter-spacing:1px}
 .svc-more:hover b{background:var(--accent);color:#0a0a0a}
 .svc-more > span{opacity:.85}
 /* ---------- services search ---------- */
-.svc-search{max-width:1240px;margin:0 auto;padding:26px 34px 6px}
-#svcsearch{width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);border-radius:3px;color:var(--paper);font-family:"Montserrat",sans-serif;font-size:14px;padding:12px 16px;outline:none;transition:border-color .2s;-webkit-appearance:none}
-#svcsearch:focus{border-color:var(--accent)}
-#svcsearch::placeholder{color:var(--muted)}
-#svcnone{margin-top:10px;color:var(--muted);font-size:13.5px}
-#svcnone a{color:var(--accent)}
-.searching .svc-more{display:none !important}
-.svc-filtered{display:none !important}
-.svc-reveal{display:flex !important}
-@media(max-width:820px){.svc-search{padding:0 24px 6px}}

@@ -122,31 +122,6 @@
     more.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setOpen(!group.classList.contains('svc-open')); } });
   });
 
-  /* ---------- services search: live filter across every row, hidden ones included ---------- */
-  var svcSearch = document.getElementById('svcsearch');
-  if (svcSearch) {
-    var svcNone = document.getElementById('svcnone');
-    svcSearch.addEventListener('input', function () {
-      var q = svcSearch.value.trim().toLowerCase();
-      document.getElementById('services').classList.toggle('searching', !!q);
-      var any = false;
-      document.querySelectorAll('.svc-group').forEach(function (group) {
-        var hit = false;
-        group.querySelectorAll('.svc').forEach(function (row) {
-          if (row.classList.contains('svc-more')) return;
-          if (!q) { row.classList.remove('svc-filtered', 'svc-reveal'); return; }
-          var match = row.textContent.toLowerCase().indexOf(q) > -1;
-          row.classList.toggle('svc-filtered', !match);
-          row.classList.toggle('svc-reveal', match && row.classList.contains('svc-hidden'));
-          if (match) hit = true;
-        });
-        group.style.display = (!q || hit) ? '' : 'none';
-        if (hit) any = true;
-      });
-      svcNone.hidden = !q || any;
-    });
-  }
-
   /* ---------- services rows: if a row holds a link, the whole row is clickable ---------- */
   document.querySelectorAll('.svc').forEach(function (row) {
     var a = row.querySelector('a[href]');
